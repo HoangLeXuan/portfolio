@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gelp 2.0 AI-Powered Food Recommendation Chatbot - Hoang Le Xuan</title>
+    <title>Modeling Invasive Species Dynamics and Distribution - Hoang Le Xuan</title>
     <link rel="stylesheet" href="../styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -32,14 +32,14 @@
         <div class="article-container">
             <!-- Article Header -->
             <header class="article-header">
-                <h1 class="article-title">Gelp 2.0 – AI-Powered Food Recommendation Chatbot</h1>
-                <p class="article-subtitle">A conversational AI chatbot that delivers personalized food recommendations based on user preferences and demographics. Built using natural language processing and designed with user interaction in mind, Gelp 2.0 demonstrates practical application of machine learning in a real-world, user-friendly format.</p>
+                <h1 class="article-title">Modeling Invasive Species Dynamics and Distribution</h1>
+                <p class="article-subtitle">Welcome! This research contains the research and code used in the study "Modeling Invasive Species Dynamics and Distribution to Guide Management Strategies: A Case Study on Cane Toads in Australia" by Hoang Le. The research aims to comprehensively assess potential cane toad distribution in Australia using statistical and machine learning models.</p>
 
             </header>
 
             <!-- Hero Image -->
             <figure class="article-hero">
-                <img src="../images/project2-preview.jpg" alt="Chat Application Screenshot" class="hero-image">
+                <img src="../images/project4-preview.jpg" alt="Chat Application Screenshot" class="hero-image">
                 <!-- If no image: <div class="hero-placeholder">Chat Application Preview</div> -->
             </figure>
 
@@ -47,17 +47,17 @@
             <article class="article-content">
                 <section class="content-section">
                     <h2>What is it?</h2>
-                    <p>Gelp 2.0 is an AI-powered chatbot that provides personalized food recommendations based on user preferences and demographics. Built using natural language processing techniques and designed for conversational interaction, it simulates a dialogue with users to understand their tastes and dietary needs before generating intelligent, user-centric suggestions.</p>
+                    <p>Welcome to my research study! This is a study on SDM - Species Distribution Modeling on a species - In this case a cane toad for proof of concept. The study employs several modeling approaches to predict the presence and spread of Cane Toads in Australia, including Generalized Linear Models (GLM), BIOCLIM, Domain, Support Vector Machine (SVM), MaxEnt, and Random Forest.
+The repository includes the final paper that provides a detailed account of the methodology, the data analyzed, model evaluations, and the results, including a geospatial prediction map. The study only employed geospatial data, and not taking predatory into consideration yet.</p>
                 </section>
 
                 <section class="content-section">
-                    <h2>Objective</h2>
-                    <p>Creating the first chat bot, and learning developing an AI chatbot capable of understanding user input and offering tailored food recommendations. </p>
+                    <h2>Study Purpose and Objective</h2>
+                    <p>Pure fun of learning! I want to explore how a species of animal may have different distribution model based on different/ similar environmental factor. This research will expand out into taking predatory into consideration, and taking different animals into consideration as well.</p>
                 </section>
 
 
-
-<!--                 <section class="content-section">
+<!--                  <section class="content-section">
                     <h2>Tools</h2>
                     <div class="tools-grid">
                         <div class="tool-category">
@@ -88,12 +88,72 @@
                             </ul>
                         </div>
                     </div>
-                </section> -->
+                </section>  -->
+
+                <section class="content-section">
+    <h2>Project Contents</h2>
+    <div class="tools-grid">
+        <div class="tool-category">
+            <h3>Data Files:</h3>
+            <ul class="tech-list">
+                <li><strong>data.zip</strong> – Species occurrence data (large raster layers >100MB).</li>
+                <li><strong>input.zip</strong> – Input datasets for modeling species occurrence.</li>
+                <li><strong>Terrestrial Ecoregions</strong> – Refer to external package documentation for downloading full data.</li>
+            </ul>
+        </div>
+        <div class="tool-category">
+            <h3>R Markdown Scripts:</h3>
+            <ul class="tech-list">
+                <li><strong>AbsenceBGData.Rmd</strong> – Analyzes absence and background data of invasive species.</li>
+                <li><strong>DataPipeline_ctsel.Rmd</strong> – Builds a data pipeline for Cane Toads under the <em>ctsel</em> dataset.</li>
+                <li><strong>DifferentModelMethods.Rmd</strong> – Explores ML algorithms for modeling Cane Toad spread.</li>
+                <li><strong>ModelFitting.Rmd</strong> – Fits predictive models for species presence and spread.</li>
+            </ul>
+        </div>
+        <div class="tool-category">
+            <h3>Outputs & Documents:</h3>
+            <ul class="tech-list">
+                <li><strong>Figures/</strong> – Visual outputs from modeling and analysis.</li>
+                <li><strong>DA401 - Autobiography - Hoang Le.pdf</strong> – Autobiographical context of the study.</li>
+                <li><strong>README.md</strong> – Repository description and usage guide.</li>
+                <li><strong>LICENSE.txt</strong> – BSD-3-Clause open source license.</li>
+            </ul>
+        </div>
+        <div class="tool-category">
+            <h3>Project Configuration:</h3>
+            <ul class="tech-list">
+                <li><strong>.Rproj</strong> – R project file for environment setup.</li>
+                <li><strong>.Rhistory</strong> – Script and command history.</li>
+                <li><strong>.gitignore</strong> – Version control exclusions.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
 
                 <section class="content-section">
                     <h2>Value Proposition</h2>
                     <p>This project is a fun user-product development, particularly in real-time applications. It demonstrates proficiency in modern JavaScript frameworks, WebSocket technology, and user experience design. </p>
-                    
+
+                </section>
+
+                <section class="content-section">
+                    <h2>Data</h2>
+                    <p>Please navigate to the project's repository on Github. data.zip and input.zip contain data about the species occurrence, and Raster Layers are >100mb. Currently, I am figuring out a way to push those files without extensive problems. For Terrestrial Ecoregions of the World data, refer to the package's documentation and download the full documentation at here</p>
+
+                </section>
+
+                <section class="content-section">
+                    <h2>Citation</h2>
+                    <p>To cite this repository in your work, please use the following:
+
+Le, H. X. (2024). Modeling the Dynamics of Invasive Species with Distribution Models to Inform Management Strategies: A Case Study on Cane Toads. GitHub. https://github.com/HoangLeXuan/modeling-invasive-species</p>
+
+                </section>
+
+                <section class="content-section">
+                    <h2>Acknowledgements</h2>
+                    <p>The author thanks the contributors to the WorldClim database and The Global Biodiversity Information Facility (GBIF) and all referenced works that have made this study possible. The author would love to extend thanks to Dr. Supp for their guidance and Lena Le at here for their extended reviews of the research, without their the research wouldn't be completed.</p>
 
                 </section>
 
@@ -102,7 +162,7 @@
 
             <!-- Project Links -->
             <div class="project-actions">
-                <a href="https://www.chatbase.co/chatbot-iframe/mDuFHu-Ichg3pjsMtVJIi" target="_blank" class="action-btn primary">
+                <a href="https://github.com/HoangLeXuan/modeling-invasive-species" target="_blank" class="action-btn primary">
                     View Live Project
                 </a>
                 
@@ -126,7 +186,7 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2024 [Your Name]</p>
+            <p>&copy; 2025 Hoang Le Xuan</p>
         </div>
     </footer>
 
