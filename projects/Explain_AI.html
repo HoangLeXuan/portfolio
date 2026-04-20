@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Neural Networks — A Visual Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Lora:ital,wght@0,400;1,400;1,600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #0a0a0f;
+  --bg2: #111118;
+  --bg3: #18181f;
+  --bg4: #1f1f28;
+  --text: #e8e6f0;
+  --muted: #7a788a;
+  --border: rgba(255,255,255,0.08);
+  --accent: #6c63ff;
+  --accent2: #ff6b6b;
+  --accent3: #43d9a2;
+  --accent4: #ffd166;
+  --blue: #4da6ff;
+  --teal: #43d9a2;
+  --coral: #ff6b6b;
+  --amber: #ffd166;
+  --purple: #6c63ff;
+  --pink: #ff7eb3;
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'Lora', serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2.5rem;
+  background: rgba(10,10,15,0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  text-decoration: none;
+}
+.nav-logo span { color: var(--accent); }
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+.nav-links a {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color .2s;
+  letter-spacing: .04em;
+}
+.nav-links a:hover { color: var(--text); }
+
+.nav-pill {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  padding: 5px 14px;
+  border: 1px solid var(--accent);
+  border-radius: 99px;
+  color: var(--accent);
+  cursor: pointer;
+  background: transparent;
+  transition: all .2s;
+}
+.nav-pill:hover { background: var(--accent); color: #fff; }
+
+/* ── HERO ── */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 8rem 2rem 4rem;
+  overflow: hidden;
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 20%, transparent 100%);
+}
+
+.hero-glow {
+  position: absolute;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(108,99,255,0.15) 0%, transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -60%);
+  pointer-events: none;
+}
+
+.hero-content { position: relative; text-align: center; max-width: 800px; }
+
+.hero-tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: .1em;
+  color: var(--accent);
+  border: 1px solid rgba(108,99,255,0.4);
+  padding: 4px 14px;
+  border-radius: 99px;
+  margin-bottom: 1.5rem;
+  animation: fadeUp .8s ease both;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 5.5rem);
+  font-weight: 800;
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.5rem;
+  animation: fadeUp .8s .1s ease both;
+}
+
+.hero-title em {
+  font-style: italic;
+  font-family: var(--font-body);
+  font-weight: 400;
+  color: var(--accent);
+}
+
+.hero-sub {
+  font-size: 1.1rem;
+  color: var(--muted);
+  max-width: 520px;
+  margin: 0 auto 2.5rem;
+  animation: fadeUp .8s .2s ease both;
+  font-style: italic;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  animation: fadeUp .8s .3s ease both;
+}
+
+.btn-primary {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 12px 28px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all .2s;
+  letter-spacing: .02em;
+}
+.btn-primary:hover { background: #5a52e0; transform: translateY(-2px); }
+
+.btn-ghost {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 12px 28px;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all .2s;
+  letter-spacing: .02em;
+}
+.btn-ghost:hover { border-color: var(--text); }
+
+/* ── LIVE NN CANVAS ── */
+.hero-nn {
+  position: relative;
+  margin-top: 3rem;
+  animation: fadeUp .8s .4s ease both;
+}
+
+/* ── SECTIONS ── */
+section {
+  padding: 6rem 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.section-tag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: .12em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+.section-lead {
+  font-size: 1rem;
+  color: var(--muted);
+  max-width: 580px;
+  margin-bottom: 3rem;
+}
+
+/* ── DIVIDER ── */
+.divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ── COMPONENT CARDS ── */
+.components-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.comp-card {
+  background: var(--bg2);
+  padding: 2rem;
+  cursor: pointer;
+  transition: background .2s;
+  position: relative;
+}
+.comp-card:hover { background: var(--bg3); }
+.comp-card.active { background: var(--bg3); }
+.comp-card.active::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--card-color, var(--accent));
+}
+
+.comp-num {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+  letter-spacing: .08em;
+}
+
+.comp-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.comp-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 0.4rem;
+}
+
+.comp-short {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* ── DETAIL PANEL ── */
+.detail-panel {
+  margin-top: 1px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 0 0 16px 16px;
+  padding: 2.5rem;
+  display: none;
+  animation: panelIn .3s ease;
+}
+.detail-panel.visible { display: flex; gap: 3rem; }
+
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.detail-text { flex: 1; min-width: 0; }
+.detail-viz { flex: 0 0 360px; }
+
+.detail-title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.detail-desc {
+  font-size: 0.95rem;
+  color: var(--muted);
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+}
+
+.detail-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.fact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.fact-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  margin-top: 7px;
+  flex-shrink: 0;
+}
+
+/* ── ARCHITECTURE SECTION ── */
+#architecture canvas {
+  border-radius: 12px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+}
+
+/* ── ACTIVATION SECTION ── */
+.act-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.act-tab {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  padding: 6px 16px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all .15s;
+}
+.act-tab:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+.act-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+.act-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.act-chart-wrap {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.act-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.act-formula {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  color: var(--accent);
+  padding: 1rem 1.25rem;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  border-left: 3px solid var(--accent);
+}
+
+.act-desc-box {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.act-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-right: 6px;
+  margin-bottom: 6px;
+}
+
+/* ── LOSS SECTION ── */
+.loss-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.loss-chart-wrap {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.loss-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.stat-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+}
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--muted);
+  letter-spacing: .06em;
+  margin-bottom: 0.5rem;
+}
+.stat-val {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+.stat-note { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; }
+
+/* ── OPTIMIZER ── */
+.opt-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.opt-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.75rem;
+  transition: border-color .2s, transform .2s;
+  cursor: pointer;
+}
+.opt-card:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-3px); }
+
+.opt-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 0.4rem;
+}
+.opt-tag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+  display: inline-block;
+}
+.opt-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.7; }
+
+.opt-bar-wrap { margin-top: 1rem; }
+.opt-bar-label { font-family: var(--font-mono); font-size: 0.68rem; color: var(--muted); margin-bottom: 4px; display: flex; justify-content: space-between; }
+.opt-bar { height: 4px; background: var(--bg4); border-radius: 99px; overflow: hidden; }
+.opt-bar-fill { height: 100%; border-radius: 99px; transition: width .8s ease; }
+
+/* ── LIVE DEMO ── */
+.demo-wrap {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.demo-header {
+  padding: 1.25rem 1.75rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.demo-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+.demo-body {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+}
+
+.demo-controls {
+  border-right: 1px solid var(--border);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.ctrl-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--muted);
+  letter-spacing: .06em;
+  margin-bottom: 6px;
+}
+
+.ctrl-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ctrl-val {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--accent);
+  min-width: 36px;
+  text-align: right;
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 3px;
+  background: var(--bg4);
+  border-radius: 99px;
+  outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+}
+
+select {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  padding: 6px 10px;
+  outline: none;
+  cursor: pointer;
+}
+
+.run-btn {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 10px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all .2s;
+  width: 100%;
+}
+.run-btn:hover { background: #5a52e0; }
+.run-btn.running { background: var(--coral); }
+
+.demo-canvas-wrap { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+
+.epoch-bar {
+  height: 3px;
+  background: var(--bg4);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.epoch-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 99px;
+  width: 0%;
+  transition: width .1s linear;
+}
+
+.demo-metrics {
+  display: flex;
+  gap: 1rem;
+}
+.metric-box {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+.metric-label { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); margin-bottom: 3px; }
+.metric-val { font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; }
+
+/* ── SUMMARY ── */
+#summary {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 6rem 2rem;
+}
+
+.summary-inner { max-width: 1100px; margin: 0 auto; }
+
+.key-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-top: 3rem;
+}
+
+.key-card {
+  background: var(--bg2);
+  padding: 2rem;
+  transition: background .2s;
+}
+.key-card:hover { background: var(--bg3); }
+
+.key-num {
+  font-family: var(--font-mono);
+  font-size: 2rem;
+  font-weight: 300;
+  color: var(--border);
+  margin-bottom: 0.5rem;
+  line-height: 1;
+}
+
+.key-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.key-desc {
+  font-size: 0.83rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* ── FOOTER ── */
+footer {
+  padding: 2rem 2.5rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  max-width: 100%;
+}
+
+/* ── SCROLL REVEAL ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .5; }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .components-grid { grid-template-columns: 1fr 1fr; }
+  .detail-panel.visible { flex-direction: column; }
+  .detail-viz { flex: none; }
+  .act-grid, .loss-grid, .opt-grid { grid-template-columns: 1fr; }
+  .demo-body { grid-template-columns: 1fr; }
+  .demo-controls { border-right: none; border-bottom: 1px solid var(--border); }
+  .key-grid, .summary-grid { grid-template-columns: 1fr 1fr; }
+  nav .nav-links { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#hero"><span>Neural</span>Viz</a>
+  <ul class="nav-links">
+    <li><a href="#components">Components</a></li>
+    <li><a href="#architecture">Architecture</a></li>
+    <li><a href="#activations">Activations</a></li>
+    <li><a href="#loss">Loss</a></li>
+    <li><a href="#optimizer">Optimizer</a></li>
+    <li><a href="#demo">Live Demo</a></li>
+  </ul>
+  <button class="nav-pill" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">Try it Live →</button>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-tag">TensorFlow Playground · Visual Guide</div>
+    <h1 class="hero-title">Neural Networks<br/><em>Visualized</em></h1>
+    <p class="hero-sub">From input neurons to gradient descent — every component of a neural network, made interactive and alive.</p>
+    <div class="hero-cta">
+      <a href="#components" class="btn-primary">Explore Components</a>
+      <a href="#demo" class="btn-ghost">Live Training Demo</a>
+    </div>
+  </div>
+  <!-- Animated NN -->
+  <div class="hero-nn">
+    <canvas id="heroCanvas" width="700" height="220"></canvas>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- COMPONENTS -->
+<section id="components">
+  <div class="reveal">
+    <div class="section-tag">01 — Components</div>
+    <h2 class="section-title">Six Building Blocks</h2>
+    <p class="section-lead">Click any component to reveal a detailed explanation and interactive visualization.</p>
+  </div>
+  <div class="reveal" style="transition-delay:.1s">
+    <div class="components-grid" id="compGrid">
+      <!-- cards injected by JS -->
+    </div>
+    <div class="detail-panel" id="detailPanel"></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ARCHITECTURE -->
+<section id="architecture">
+  <div class="reveal">
+    <div class="section-tag">02 — Architecture</div>
+    <h2 class="section-title">How Data Flows</h2>
+    <p class="section-lead">Click any layer or neuron to inspect its role in the forward pass. Hover connections to see weight values.</p>
+  </div>
+  <div class="reveal" style="transition-delay:.1s">
+    <canvas id="archCanvas" width="1060" height="340" style="width:100%;cursor:pointer"></canvas>
+    <div id="archInfo" style="margin-top:1rem;font-family:var(--font-mono);font-size:0.78rem;color:var(--muted);min-height:24px;padding:0 0.5rem"></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ACTIVATIONS -->
+<section id="activations">
+  <div class="reveal">
+    <div class="section-tag">03 — Activation Functions</div>
+    <h2 class="section-title">The Non-Linear Gates</h2>
+    <p class="section-lead">Without activations, deep networks collapse to a single linear transformation. These functions are what make learning complex patterns possible.</p>
+  </div>
+  <div class="reveal" style="transition-delay:.1s">
+    <div class="act-tabs" id="actTabs"></div>
+    <div class="act-grid">
+      <div class="act-chart-wrap">
+        <canvas id="actChart" height="220"></canvas>
+      </div>
+      <div class="act-info" id="actInfo"></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- LOSS -->
+<section id="loss">
+  <div class="reveal">
+    <div class="section-tag">04 — Loss Functions</div>
+    <h2 class="section-title">Measuring the Error</h2>
+    <p class="section-lead">Loss quantifies how wrong the model is. Training is the process of relentlessly driving this number toward zero — on data the model has never seen.</p>
+  </div>
+  <div class="reveal" style="transition-delay:.1s">
+    <div class="loss-grid">
+      <div>
+        <div class="loss-chart-wrap">
+          <canvas id="lossChart" height="240"></canvas>
+        </div>
+        <div class="loss-stats">
+          <div class="stat-card">
+            <div class="stat-label">Training Loss</div>
+            <div class="stat-val" style="color:var(--blue)">0.001</div>
+            <div class="stat-note">Near-perfect fit on training data</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Test Loss</div>
+            <div class="stat-val" style="color:var(--coral)">0.075</div>
+            <div class="stat-note">Mild gap → slight overfitting</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1rem">
+        <div style="font-family:var(--font-display);font-weight:700;font-size:1.1rem;margin-bottom:0.25rem">From the TF Playground screenshot</div>
+        <p style="font-size:0.88rem;color:var(--muted);line-height:1.8">At epoch 1,980 the training loss reached <strong style="color:var(--blue)">0.001</strong> while the test loss sits at <strong style="color:var(--coral)">0.075</strong>. This gap is the signature of overfitting — the network memorized some noise in the training set.</p>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.25rem">
+          <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--muted);margin-bottom:0.75rem;letter-spacing:.06em">COMMON LOSS FUNCTIONS</div>
+          <div style="display:flex;flex-direction:column;gap:0.75rem">
+            <div><div style="font-family:var(--font-mono);color:var(--accent);font-size:0.82rem">Mean Squared Error</div><div style="font-size:0.8rem;color:var(--muted)">L = (1/n) Σ (y − ŷ)². Penalizes large errors heavily. Best for regression.</div></div>
+            <div><div style="font-family:var(--font-mono);color:var(--teal);font-size:0.82rem">Binary Cross-Entropy</div><div style="font-size:0.8rem;color:var(--muted)">L = −[y log(ŷ) + (1−y)log(1−ŷ)]. Standard for binary classification.</div></div>
+            <div><div style="font-family:var(--font-mono);color:var(--amber);font-size:0.82rem">Categorical Cross-Entropy</div><div style="font-size:0.8rem;color:var(--muted)">Extends BCE to multi-class problems. Used with softmax output.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- OPTIMIZER -->
+<section id="optimizer">
+  <div class="reveal">
+    <div class="section-tag">05 — Optimization</div>
+    <h2 class="section-title">Descending the Loss Surface</h2>
+    <p class="section-lead">Optimizers use gradients to update weights after each batch. The choice of optimizer and learning rate dramatically affects training speed and final accuracy.</p>
+  </div>
+  <div class="reveal" style="transition-delay:.1s">
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem">
+      <canvas id="optChart" height="200"></canvas>
+    </div>
+    <div class="opt-grid" id="optGrid"></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- LIVE DEMO -->
+<section id="demo" style="max-width:1100px;margin:0 auto;padding:6rem 2rem">
+  <div class="reveal">
+    <div class="section-tag">06 — Live Demo</div>
+    <h2 class="section-title">Train a Network</h2>
+    <p class="section-lead">Adjust the hyperparameters and watch loss converge in real time. This simulates what you see in TensorFlow Playground.</p>
+  </div>
+  <div class="reveal" style="transition-delay:.1s">
+    <div class="demo-wrap">
+      <div class="demo-header">
+        <div class="demo-dot" style="background:#ff5f56"></div>
+        <div class="demo-dot" style="background:#ffbd2e"></div>
+        <div class="demo-dot" style="background:#27c93f"></div>
+        <span style="font-family:var(--font-mono);font-size:0.75rem;color:var(--muted);margin-left:0.5rem">neural_network_training.py</span>
+      </div>
+      <div class="demo-body">
+        <div class="demo-controls">
+          <div>
+            <div class="ctrl-label">Learning Rate</div>
+            <div class="ctrl-row">
+              <input type="range" id="lrSlider" min="1" max="10" value="3" step="1"/>
+              <span class="ctrl-val" id="lrVal">0.03</span>
+            </div>
+          </div>
+          <div>
+            <div class="ctrl-label">Hidden Layers</div>
+            <div class="ctrl-row">
+              <input type="range" id="layersSlider" min="1" max="4" value="2" step="1"/>
+              <span class="ctrl-val" id="layersVal">2</span>
+            </div>
+          </div>
+          <div>
+            <div class="ctrl-label">Neurons per Layer</div>
+            <div class="ctrl-row">
+              <input type="range" id="neuronsSlider" min="2" max="8" value="7" step="1"/>
+              <span class="ctrl-val" id="neuronsVal">7</span>
+            </div>
+          </div>
+          <div>
+            <div class="ctrl-label">Activation Function</div>
+            <select id="actSelect">
+              <option value="tanh">Tanh (used in screenshot)</option>
+              <option value="relu">ReLU</option>
+              <option value="sigmoid">Sigmoid</option>
+            </select>
+          </div>
+          <div>
+            <div class="ctrl-label">Regularization</div>
+            <select id="regSelect">
+              <option value="L1">L1</option>
+              <option value="L2">L2</option>
+              <option value="none">None</option>
+            </select>
+          </div>
+          <button class="run-btn" id="runBtn" onclick="toggleTraining()">▶ Start Training</button>
+        </div>
+        <div class="demo-canvas-wrap">
+          <div class="epoch-bar"><div class="epoch-fill" id="epochFill"></div></div>
+          <div class="demo-metrics">
+            <div class="metric-box"><div class="metric-label">EPOCH</div><div class="metric-val" id="epochVal" style="color:var(--text)">0</div></div>
+            <div class="metric-box"><div class="metric-label">TRAIN LOSS</div><div class="metric-val" id="trainLossVal" style="color:var(--blue)">—</div></div>
+            <div class="metric-box"><div class="metric-label">TEST LOSS</div><div class="metric-val" id="testLossVal" style="color:var(--coral)">—</div></div>
+            <div class="metric-box"><div class="metric-label">STATUS</div><div class="metric-val" id="statusVal" style="color:var(--muted);font-size:0.85rem">Idle</div></div>
+          </div>
+          <canvas id="demoChart" height="220"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SUMMARY -->
+<section id="summary">
+  <div class="summary-inner">
+    <div class="reveal">
+      <div class="section-tag">Summary</div>
+      <h2 class="section-title">Key Insights</h2>
+      <p class="section-lead">Visualizing neural networks transforms abstract math into intuitive spatial understanding.</p>
+    </div>
+    <div class="reveal" style="transition-delay:.1s">
+      <div class="key-grid">
+        <div class="key-card">
+          <div class="key-num">01</div>
+          <div class="key-title">Depth enables abstraction</div>
+          <div class="key-desc">Each hidden layer detects increasingly complex patterns — from edges to shapes to objects. The spiral in TF Playground requires at least 2 hidden layers.</div>
+        </div>
+        <div class="key-card">
+          <div class="key-num">02</div>
+          <div class="key-title">Weights are the memory</div>
+          <div class="key-desc">Everything the network "knows" lives in its weights. The thickness of connections in TF Playground directly encodes learned importance.</div>
+        </div>
+        <div class="key-card">
+          <div class="key-num">03</div>
+          <div class="key-title">Non-linearity is essential</div>
+          <div class="key-desc">Without activation functions, any depth of network collapses to a single linear equation — incapable of modeling curves like the spiral boundary.</div>
+        </div>
+        <div class="key-card">
+          <div class="key-num">04</div>
+          <div class="key-title">Loss gap signals overfitting</div>
+          <div class="key-desc">A training loss of 0.001 vs test loss of 0.075 means the model memorized noise. Regularization (L1 in the screenshot) helps close this gap.</div>
+        </div>
+        <div class="key-card">
+          <div class="key-num">05</div>
+          <div class="key-title">Tanh maps to color</div>
+          <div class="key-desc">The orange/blue boundary in TF Playground is literally the Tanh output — orange for positive, blue for negative activations at each point in space.</div>
+        </div>
+        <div class="key-card">
+          <div class="key-num">06</div>
+          <div class="key-title">Visualization accelerates learning</div>
+          <div class="key-desc">Seeing gradients flow, weights update, and decision boundaries sharpen turns hours of equation-reading into seconds of intuitive insight.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>Neural Networks — A Visual Guide · Based on TensorFlow Playground</span>
+  <span>Built with HTML, CSS & Chart.js</span>
+</footer>
+
+<script>
+// ── COMPONENTS DATA ──
+const comps = [
+  {
+    id: 'layers', name: 'Layers', num: '01',
+    short: 'Groups of neurons processed together at each stage',
+    color: '#4da6ff',
+    bg: 'rgba(77,166,255,0.12)',
+    icon: '⬡',
+    title: 'Layers — Stages of Computation',
+    desc: 'A layer is a collection of neurons that transform their inputs in parallel and pass results to the next stage. Each layer specializes: input layers receive raw data, hidden layers extract features, and output layers produce predictions. The TF Playground uses 2 hidden layers of 7 neurons each.',
+    facts: [
+      { text: 'More layers = more abstract representations', color: '#4da6ff' },
+      { text: 'TF Playground: 2 hidden layers, 7 neurons each', color: '#4da6ff' },
+      { text: 'Dense (fully connected) layers connect every neuron to every neuron in the next layer', color: '#4da6ff' },
+      { text: 'Conv layers share weights spatially; RNN layers feed output back as input', color: '#4da6ff' },
+    ]
+  },
+  {
+    id: 'neurons', name: 'Neurons', num: '02',
+    short: 'The atomic unit: weighted sum + bias + activation',
+    color: '#6c63ff',
+    bg: 'rgba(108,99,255,0.12)',
+    icon: '◎',
+    title: 'Neurons — Atomic Computation Units',
+    desc: 'Each neuron computes a weighted sum of its inputs, adds a bias term, then passes the result through an activation function: output = f(Σ wᵢxᵢ + b). The bias allows the neuron to fire even when all inputs are zero. Thousands of neurons working in concert create the network\'s learned representations.',
+    facts: [
+      { text: 'A single neuron is a generalization of logistic regression', color: '#6c63ff' },
+      { text: 'Bias b shifts the decision boundary without depending on input values', color: '#6c63ff' },
+      { text: 'Colors inside neurons in TF Playground show their activation strength', color: '#6c63ff' },
+    ]
+  },
+  {
+    id: 'weights', name: 'Weights', num: '03',
+    short: 'Learnable scalars controlling signal strength',
+    color: '#ffd166',
+    bg: 'rgba(255,209,102,0.12)',
+    icon: '≈',
+    title: 'Weights — The Network\'s Memory',
+    desc: 'A weight is a learnable scalar multiplied by each connection\'s signal. Positive weights amplify matching features; negative weights suppress them. In TF Playground, line thickness visualizes weight magnitude — thick lines carry more signal. Training adjusts all weights simultaneously using backpropagation.',
+    facts: [
+      { text: 'Weights are initialized randomly, then refined by gradient descent', color: '#ffd166' },
+      { text: 'A network with 2 layers × 7 neurons has 7×7 = 49+ weight connections per layer pair', color: '#ffd166' },
+      { text: 'Large weights with no regularization → overfitting', color: '#ffd166' },
+      { text: 'L1 regularization (used in TF screenshot) pushes small weights to exactly zero', color: '#ffd166' },
+    ]
+  },
+  {
+    id: 'activations', name: 'Activations', num: '04',
+    short: 'Non-linear gates enabling complex learning',
+    color: '#43d9a2',
+    bg: 'rgba(67,217,162,0.12)',
+    icon: '∿',
+    title: 'Activation Functions — Non-Linear Gates',
+    desc: 'Without activations, any deep network collapses to a single linear transformation — useless for curved boundaries like the spiral in TF Playground. Tanh (used in the screenshot) squashes input to [−1, 1], producing the characteristic orange/blue output map. ReLU is faster but asymmetric.',
+    facts: [
+      { text: 'Tanh output range [−1,1] maps directly to the orange/blue colors in TF Playground', color: '#43d9a2' },
+      { text: 'ReLU max(0,x) dominates modern deep learning for its simplicity and speed', color: '#43d9a2' },
+      { text: 'Vanishing gradient: Sigmoid and Tanh saturate, making deep nets hard to train', color: '#43d9a2' },
+    ]
+  },
+  {
+    id: 'loss', name: 'Loss Functions', num: '05',
+    short: 'Quantifying how wrong predictions are',
+    color: '#ff6b6b',
+    bg: 'rgba(255,107,107,0.12)',
+    icon: '△',
+    title: 'Loss Functions — The Error Signal',
+    desc: 'Loss measures how far off predictions are from ground truth. Training minimizes loss via gradient descent. In the TF Playground screenshot, training loss = 0.001 (nearly perfect) but test loss = 0.075 — a gap caused by overfitting. L1 regularization penalizes weight magnitude to close this gap.',
+    facts: [
+      { text: 'MSE: L = (1/n)Σ(y−ŷ)² — penalizes large errors quadratically, used for regression', color: '#ff6b6b' },
+      { text: 'Cross-entropy: L = −Σ y log(ŷ) — standard for classification tasks', color: '#ff6b6b' },
+      { text: 'Training loss 0.001 vs Test loss 0.075 = overfitting detected', color: '#ff6b6b' },
+    ]
+  },
+  {
+    id: 'optimizer', name: 'Optimizer', num: '06',
+    short: 'Gradient-based weight update algorithms',
+    color: '#ff7eb3',
+    bg: 'rgba(255,126,179,0.12)',
+    icon: '↓',
+    title: 'Optimization Algorithms — Descending the Loss Surface',
+    desc: 'Optimizers use the loss gradient to determine how to update each weight after every batch. TF Playground uses a learning rate of 0.03 — small enough for stable convergence on the spiral. Adam adapts its step size per parameter; SGD uses a fixed rate and is noisier but sometimes generalizes better.',
+    facts: [
+      { text: 'Learning rate 0.03 used in the screenshot — the standard default for TF Playground', color: '#ff7eb3' },
+      { text: 'SGD: simple, noisy, sometimes better generalization due to noise', color: '#ff7eb3' },
+      { text: 'Adam: adaptive momentum + squared gradient tracking, default for most deep nets', color: '#ff7eb3' },
+      { text: 'Too high LR → loss oscillates; too low → training takes forever', color: '#ff7eb3' },
+    ]
+  },
+];
+
+// ── RENDER COMPONENT CARDS ──
+const grid = document.getElementById('compGrid');
+let activeComp = null;
+
+comps.forEach((c, i) => {
+  const card = document.createElement('div');
+  card.className = 'comp-card';
+  card.style.setProperty('--card-color', c.color);
+  card.innerHTML = `
+    <div class="comp-num">${c.num}</div>
+    <div class="comp-icon" style="background:${c.bg};color:${c.color};font-size:1.4rem">${c.icon}</div>
+    <div class="comp-name">${c.name}</div>
+    <div class="comp-short">${c.short}</div>
+  `;
+  card.onclick = () => toggleComp(i, c, card);
+  grid.appendChild(card);
+});
+
+function toggleComp(i, c, card) {
+  const panel = document.getElementById('detailPanel');
+  const allCards = grid.querySelectorAll('.comp-card');
+  if (activeComp === i) {
+    panel.classList.remove('visible');
+    card.classList.remove('active');
+    activeComp = null;
+    return;
+  }
+  allCards.forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+  activeComp = i;
+  panel.innerHTML = `
+    <div class="detail-text">
+      <div class="detail-title" style="color:${c.color}">${c.title}</div>
+      <div class="detail-desc">${c.desc}</div>
+      <div class="detail-facts">
+        ${c.facts.map(f => `<div class="fact-item"><div class="fact-dot" style="background:${f.color}"></div><span>${f.text}</span></div>`).join('')}
+      </div>
+    </div>
+    <div class="detail-viz" id="compViz-${c.id}"></div>
+  `;
+  panel.classList.add('visible');
+  renderCompViz(c);
+}
+
+function renderCompViz(c) {
+  const el = document.getElementById('compViz-' + c.id);
+  if (!el) return;
+  if (c.id === 'activations') {
+    el.innerHTML = `<canvas id="miniActChart" height="180"></canvas>`;
+    setTimeout(() => {
+      const xs = [], ys = [];
+      for (let x = -4; x <= 4; x += 0.1) { xs.push(x.toFixed(1)); ys.push(Math.tanh(x)); }
+      new Chart(document.getElementById('miniActChart'), {
+        type:'line', data:{ labels:xs, datasets:[{data:ys,borderColor:c.color,borderWidth:2,pointRadius:0,tension:.2,fill:false}] },
+        options:{ responsive:true, plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:'#7a788a',maxTicksLimit:5}}, y:{ticks:{color:'#7a788a',maxTicksLimit:5}} } }
+      });
+    }, 50);
+  } else if (c.id === 'loss') {
+    el.innerHTML = `<canvas id="miniLossChart" height="180"></canvas>`;
+    setTimeout(() => {
+      const labels = Array.from({length:50},(_,i)=>i*40);
+      const train = labels.map(e => Math.max(0.001, 0.9 * Math.exp(-e/400) + 0.001));
+      const test = labels.map(e => Math.max(0.075, 0.85 * Math.exp(-e/350) + 0.075));
+      new Chart(document.getElementById('miniLossChart'), {
+        type:'line', data:{ labels, datasets:[
+          {label:'Train',data:train,borderColor:'#4da6ff',borderWidth:2,pointRadius:0,tension:.3,fill:false},
+          {label:'Test',data:test,borderColor:'#ff6b6b',borderWidth:2,pointRadius:0,tension:.3,fill:false,borderDash:[5,3]},
+        ]},
+        options:{ responsive:true, plugins:{legend:{labels:{color:'#7a788a',font:{size:11}}}}, scales:{ x:{ticks:{color:'#7a788a',maxTicksLimit:5}}, y:{ticks:{color:'#7a788a',maxTicksLimit:5}} } }
+      });
+    }, 50);
+  }
+}
+
+// ── HERO CANVAS ──
+const heroCanvas = document.getElementById('heroCanvas');
+const hctx = heroCanvas.getContext('2d');
+const LAYERS = [[3], [6], [6], [1]];
+const LAYER_X = [80, 240, 440, 640];
+const neurons = [];
+const connections = [];
+let tick = 0;
+
+LAYERS.forEach((layer, li) => {
+  const count = layer[0];
+  const ys = [];
+  for (let n = 0; n < count; n++) {
+    const y = 110 - (count-1)*28 + n*56;
+    ys.push({ x: LAYER_X[li], y, layer: li, idx: n, act: Math.random() });
+  }
+  neurons.push(ys);
+});
+
+for (let li = 0; li < neurons.length-1; li++) {
+  for (let ni = 0; ni < neurons[li].length; ni++) {
+    for (let nj = 0; nj < neurons[li+1].length; nj++) {
+      connections.push({ from: neurons[li][ni], to: neurons[li+1][nj], w: (Math.random()-0.5)*2 });
+    }
+  }
+}
+
+function animateHero() {
+  hctx.clearRect(0, 0, 700, 220);
+  tick += 0.02;
+
+  // Draw connections
+  connections.forEach(conn => {
+    const strength = Math.abs(conn.w);
+    const isPos = conn.w > 0;
+    hctx.beginPath();
+    hctx.moveTo(conn.from.x + 18, conn.from.y);
+    hctx.lineTo(conn.to.x - 18, conn.to.y);
+    hctx.strokeStyle = isPos ? `rgba(77,166,255,${strength * 0.5})` : `rgba(255,107,107,${strength * 0.5})`;
+    hctx.lineWidth = strength * 2.5;
+    hctx.stroke();
+  });
+
+  // Animate signals
+  neurons.forEach((layer, li) => {
+    layer.forEach((n, ni) => {
+      n.act = 0.5 + 0.4 * Math.sin(tick + li * 1.2 + ni * 0.8);
+    });
+  });
+
+  // Draw neurons
+  neurons.forEach((layer, li) => {
+    layer.forEach(n => {
+      const colors = ['#4da6ff','#6c63ff','#6c63ff','#43d9a2'];
+      const col = colors[li];
+      const r = 16;
+      hctx.beginPath();
+      hctx.arc(n.x, n.y, r, 0, Math.PI*2);
+      hctx.fillStyle = col + '33';
+      hctx.fill();
+      hctx.strokeStyle = col;
+      hctx.lineWidth = 1.5;
+      hctx.stroke();
+
+      // Glow based on activation
+      hctx.beginPath();
+      hctx.arc(n.x, n.y, r * 0.6 * n.act, 0, Math.PI*2);
+      hctx.fillStyle = col + 'aa';
+      hctx.fill();
+    });
+  });
+
+  // Layer labels
+  const labels = ['Input', 'Hidden 1', 'Hidden 2', 'Output'];
+  LAYER_X.forEach((x, i) => {
+    hctx.font = '11px DM Mono, monospace';
+    hctx.fillStyle = '#7a788a';
+    hctx.textAlign = 'center';
+    hctx.fillText(labels[i], x, 200);
+  });
+
+  requestAnimationFrame(animateHero);
+}
+animateHero();
+
+// ── ARCHITECTURE CANVAS ──
+const archCanvas = document.getElementById('archCanvas');
+const actx = archCanvas.getContext('2d');
+
+const ARCH_LAYERS = [
+  { name: 'Input Layer', neurons: 3, color: '#4da6ff', x: 80 },
+  { name: 'Hidden 1', neurons: 7, color: '#6c63ff', x: 300 },
+  { name: 'Hidden 2', neurons: 7, color: '#6c63ff', x: 530 },
+  { name: 'Output', neurons: 1, color: '#43d9a2', x: 750 },
+];
+
+const W = 1060, H = 340;
+const archNeurons = [];
+const archConns = [];
+
+ARCH_LAYERS.forEach((layer, li) => {
+  const arr = [];
+  for (let ni = 0; ni < layer.neurons; ni++) {
+    const y = H/2 - (layer.neurons-1)*22 + ni*44;
+    arr.push({ x: layer.x, y, layer: li, idx: ni, w: Math.random()*2-1 });
+  }
+  archNeurons.push(arr);
+});
+
+for (let li = 0; li < archNeurons.length-1; li++) {
+  for (let ni = 0; ni < archNeurons[li].length; ni++) {
+    for (let nj = 0; nj < archNeurons[li+1].length; nj++) {
+      archConns.push({
+        from: archNeurons[li][ni],
+        to: archNeurons[li+1][nj],
+        w: (Math.random()-0.5)*2
+      });
+    }
+  }
+}
+
+let hoveredNeuron = null;
+
+function drawArch() {
+  actx.clearRect(0, 0, W, H);
+
+  archConns.forEach(c => {
+    const isHighlight = hoveredNeuron && (c.from === hoveredNeuron || c.to === hoveredNeuron);
+    const strength = Math.abs(c.w);
+    const isPos = c.w > 0;
+    actx.beginPath();
+    actx.moveTo(c.from.x + 15, c.from.y);
+    actx.lineTo(c.to.x - 15, c.to.y);
+    if (isHighlight) {
+      actx.strokeStyle = isPos ? '#4da6ff' : '#ff6b6b';
+      actx.lineWidth = strength * 3;
+      actx.globalAlpha = 0.9;
+    } else {
+      actx.strokeStyle = isPos ? 'rgba(77,166,255,0.15)' : 'rgba(255,107,107,0.15)';
+      actx.lineWidth = strength * 1.5;
+      actx.globalAlpha = hoveredNeuron ? 0.2 : 1;
+    }
+    actx.stroke();
+    actx.globalAlpha = 1;
+  });
+
+  archNeurons.forEach((layer, li) => {
+    const col = ARCH_LAYERS[li].color;
+    layer.forEach(n => {
+      const r = 14;
+      const isHov = n === hoveredNeuron;
+      actx.beginPath();
+      actx.arc(n.x, n.y, isHov ? r+3 : r, 0, Math.PI*2);
+      actx.fillStyle = isHov ? col : col + '33';
+      actx.fill();
+      actx.strokeStyle = col;
+      actx.lineWidth = isHov ? 2 : 1;
+      actx.stroke();
+    });
+  });
+
+  ARCH_LAYERS.forEach(l => {
+    actx.font = '12px DM Mono, monospace';
+    actx.fillStyle = '#7a788a';
+    actx.textAlign = 'center';
+    actx.fillText(l.name, l.x, H - 10);
+    actx.fillText(l.neurons + (l.neurons===1?' neuron':' neurons'), l.x, H + 4);
+  });
+}
+
+drawArch();
+
+archCanvas.addEventListener('mousemove', e => {
+  const rect = archCanvas.getBoundingClientRect();
+  const scaleX = W / rect.width;
+  const scaleY = H / rect.height;
+  const mx = (e.clientX - rect.left) * scaleX;
+  const my = (e.clientY - rect.top) * scaleY;
+  let found = null;
+  archNeurons.forEach(layer => {
+    layer.forEach(n => {
+      if (Math.hypot(mx-n.x, my-n.y) < 18) found = n;
+    });
+  });
+  hoveredNeuron = found;
+  drawArch();
+  const info = document.getElementById('archInfo');
+  if (found) {
+    const l = ARCH_LAYERS[found.layer];
+    const bias = (Math.random()*0.4-0.2).toFixed(3);
+    info.textContent = `${l.name} · Neuron ${found.idx+1} · act ≈ ${(found.w*0.5+0.5).toFixed(3)} · bias = ${bias}`;
+    info.style.color = l.color;
+  } else {
+    info.textContent = 'Hover a neuron to inspect its activation and bias';
+    info.style.color = '';
+  }
+});
+archCanvas.addEventListener('mouseleave', () => { hoveredNeuron = null; drawArch(); });
+
+// ── ACTIVATION CHARTS ──
+const actFns = [
+  {
+    name: 'Tanh ★', tag: 'Used in screenshot',
+    tagColor: '#43d9a2', color: '#6c63ff',
+    formula: 'f(x) = (eˣ − e⁻ˣ) / (eˣ + e⁻ˣ)',
+    range: '(−1, 1)',
+    fn: x => Math.tanh(x),
+    badges: [
+      { text: 'Zero-centered', color: '#6c63ff' },
+      { text: 'Smooth gradient', color: '#43d9a2' },
+      { text: 'Can vanish', color: '#ff6b6b' },
+    ],
+    desc: 'Zero-centered output helps gradient flow. The orange/blue TF Playground boundary is literally Tanh output — positive activations become orange, negative become blue. Can suffer vanishing gradients in very deep networks.'
+  },
+  {
+    name: 'ReLU', tag: 'Most popular today',
+    tagColor: '#4da6ff', color: '#4da6ff',
+    formula: 'f(x) = max(0, x)',
+    range: '[0, ∞)',
+    fn: x => Math.max(0, x),
+    badges: [
+      { text: 'Sparse activation', color: '#4da6ff' },
+      { text: 'Fast to compute', color: '#43d9a2' },
+      { text: 'Dying neurons', color: '#ff6b6b' },
+    ],
+    desc: 'The workhorse of modern deep learning. Computationally cheap, no vanishing gradient for positive values. However, neurons receiving only negative inputs output exactly 0 and stop learning — the "dying ReLU" problem.'
+  },
+  {
+    name: 'Sigmoid', tag: 'Classic, now niche',
+    tagColor: '#ffd166', color: '#ffd166',
+    formula: 'f(x) = 1 / (1 + e⁻ˣ)',
+    range: '(0, 1)',
+    fn: x => 1/(1+Math.exp(-x)),
+    badges: [
+      { text: 'Probability output', color: '#ffd166' },
+      { text: 'Saturates easily', color: '#ff6b6b' },
+      { text: 'Not zero-centered', color: '#ff7eb3' },
+    ],
+    desc: 'Natural interpretation as a probability makes it ideal for binary output neurons. However, saturation at 0 and 1 causes gradients to vanish in deep networks. Not zero-centered, which can slow learning.'
+  },
+  {
+    name: 'Leaky ReLU', tag: 'Fixes dying neurons',
+    tagColor: '#ff7eb3', color: '#ff7eb3',
+    formula: 'f(x) = x if x>0, else 0.1x',
+    range: '(−∞, ∞)',
+    fn: x => x >= 0 ? x : 0.1*x,
+    badges: [
+      { text: 'No dying neurons', color: '#43d9a2' },
+      { text: 'Simple fix', color: '#ff7eb3' },
+      { text: 'Extra hyperparameter', color: '#ffd166' },
+    ],
+    desc: 'Adds a small slope (α=0.1) for negative inputs, preventing neurons from permanently outputting zero. PReLU makes α a learnable parameter. ELU goes further with smooth exponential behavior in the negative range.'
+  },
+  {
+    name: 'GELU', tag: 'Powers Transformers',
+    tagColor: '#ff6b6b', color: '#ff6b6b',
+    formula: 'f(x) = x · Φ(x)',
+    range: '(−∞, ∞)',
+    fn: x => x * 0.5 * (1 + Math.tanh(Math.sqrt(2/Math.PI)*(x+0.044715*x*x*x))),
+    badges: [
+      { text: 'GPT / BERT default', color: '#ff6b6b' },
+      { text: 'Smooth everywhere', color: '#43d9a2' },
+      { text: 'More expensive', color: '#ffd166' },
+    ],
+    desc: 'Gaussian Error Linear Unit — the standard activation in modern transformer architectures (GPT, BERT, ViT). Weights inputs by their probability under a Gaussian distribution, creating a smooth non-linearity that empirically outperforms ReLU on language tasks.'
+  }
+];
+
+let actChart = null;
+let activeAct = 0;
+
+function buildActTabs() {
+  const tabsEl = document.getElementById('actTabs');
+  actFns.forEach((fn, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'act-tab' + (i===0?' active':'');
+    btn.textContent = fn.name;
+    btn.onclick = () => {
+      document.querySelectorAll('.act-tab').forEach((t,j) => t.classList.toggle('active', j===i));
+      activeAct = i;
+      updateActChart(i);
+    };
+    tabsEl.appendChild(btn);
+  });
+  buildActChart(0);
+}
+
+function buildActChart(i) {
+  const fn = actFns[i];
+  const xs = [], ys = [];
+  for (let x = -5; x <= 5; x += 0.05) { xs.push(x.toFixed(2)); ys.push(fn.fn(x)); }
+  const ctx = document.getElementById('actChart').getContext('2d');
+  actChart = new Chart(ctx, {
+    type:'line',
+    data:{ labels:xs, datasets:[{ label:fn.name, data:ys, borderColor:fn.color, borderWidth:2.5, pointRadius:0, tension:.1, fill:false }]},
+    options:{
+      responsive:true, animation:{duration:400},
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{ type:'linear', min:-5, max:5, grid:{color:'rgba(255,255,255,0.05)'}, ticks:{color:'#7a788a',maxTicksLimit:11,stepSize:1} },
+        y:{ min:-2.5, max:2.5, grid:{color:'rgba(255,255,255,0.05)'}, ticks:{color:'#7a788a',maxTicksLimit:7} }
+      }
+    }
+  });
+  updateActInfo(i);
+}
+
+function updateActChart(i) {
+  const fn = actFns[i];
+  const xs = [], ys = [];
+  for (let x = -5; x <= 5; x += 0.05) { xs.push(x.toFixed(2)); ys.push(fn.fn(x)); }
+  actChart.data.datasets[0].data = ys;
+  actChart.data.datasets[0].borderColor = fn.color;
+  actChart.data.datasets[0].label = fn.name;
+  actChart.update();
+  updateActInfo(i);
+}
+
+function updateActInfo(i) {
+  const fn = actFns[i];
+  document.getElementById('actInfo').innerHTML = `
+    <div>
+      <span style="font-family:var(--font-mono);font-size:0.7rem;color:${fn.tagColor};background:${fn.tagColor}22;padding:3px 10px;border-radius:4px">${fn.tag}</span>
+    </div>
+    <div class="act-formula">${fn.formula}</div>
+    <div style="font-family:var(--font-mono);font-size:0.78rem;color:var(--muted)">Output range: <span style="color:${fn.color}">${fn.range}</span></div>
+    <div class="act-desc-box">${fn.desc}</div>
+    <div style="margin-top:0.5rem">
+      ${fn.badges.map(b => `<span class="act-badge" style="background:${b.color}22;color:${b.color}">${b.text}</span>`).join('')}
+    </div>
+  `;
+}
+
+buildActTabs();
+
+// ── LOSS CHART ──
+(function() {
+  const labels = Array.from({length:50}, (_,i) => i*40);
+  const train = labels.map(e => Math.max(0.001, 0.85*Math.exp(-e/300) + 0.001));
+  const test = labels.map(e => Math.max(0.075, 0.78*Math.exp(-e/280) + 0.075));
+  new Chart(document.getElementById('lossChart').getContext('2d'), {
+    type:'line',
+    data:{ labels, datasets:[
+      { label:'Training Loss', data:train, borderColor:'#4da6ff', borderWidth:2.5, pointRadius:0, tension:.3, fill:false },
+      { label:'Test Loss', data:test, borderColor:'#ff6b6b', borderWidth:2.5, pointRadius:0, tension:.3, fill:false, borderDash:[6,3] }
+    ]},
+    options:{
+      responsive:true,
+      plugins:{ legend:{ labels:{ color:'#7a788a', font:{size:12}, boxWidth:20 } } },
+      scales:{
+        x:{ title:{display:true,text:'Epochs',color:'#7a788a',font:{size:11}}, grid:{color:'rgba(255,255,255,0.05)'}, ticks:{color:'#7a788a',maxTicksLimit:7} },
+        y:{ title:{display:true,text:'Loss',color:'#7a788a',font:{size:11}}, grid:{color:'rgba(255,255,255,0.05)'}, ticks:{color:'#7a788a',maxTicksLimit:6} }
+      }
+    }
+  });
+})();
+
+// ── OPTIMIZER CHART ──
+(function() {
+  const ep = Array.from({length:60}, (_,i)=>i*33);
+  const sgd = ep.map(e => Math.max(0.08, 0.9*Math.exp(-e/800) + 0.05 + Math.sin(e/30)*0.03));
+  const adam = ep.map(e => Math.max(0.01, 0.85*Math.exp(-e/400) + 0.01));
+  const rmsp = ep.map(e => Math.max(0.03, 0.87*Math.exp(-e/550) + 0.02));
+  new Chart(document.getElementById('optChart').getContext('2d'), {
+    type:'line',
+    data:{ labels:ep, datasets:[
+      { label:'SGD', data:sgd, borderColor:'#ff6b6b', borderWidth:2, pointRadius:0, tension:.2, fill:false },
+      { label:'Adam', data:adam, borderColor:'#43d9a2', borderWidth:2.5, pointRadius:0, tension:.3, fill:false },
+      { label:'RMSProp', data:rmsp, borderColor:'#ffd166', borderWidth:2, pointRadius:0, tension:.2, fill:false, borderDash:[4,2] },
+    ]},
+    options:{
+      responsive:true,
+      plugins:{ legend:{ labels:{ color:'#7a788a', font:{size:12}, boxWidth:20 } } },
+      scales:{
+        x:{ title:{display:true,text:'Epochs',color:'#7a788a',font:{size:11}}, grid:{color:'rgba(255,255,255,0.05)'}, ticks:{color:'#7a788a',maxTicksLimit:7} },
+        y:{ title:{display:true,text:'Loss',color:'#7a788a',font:{size:11}}, grid:{color:'rgba(255,255,255,0.05)'}, ticks:{color:'#7a788a',maxTicksLimit:6} }
+      }
+    }
+  });
+})();
+
+// ── OPTIMIZER CARDS ──
+const optimizers = [
+  { name:'SGD', tag:'Stochastic Gradient Descent', tagCol:'#ff6b6b', desc:'The classic. Updates weights using gradient of a random batch. Noisy but sometimes generalizes better due to that noise. The learning rate is fixed.', speed:35, gen:80, ease:95 },
+  { name:'Adam', tag:'Adaptive Moment Estimation', tagCol:'#43d9a2', desc:'Tracks both gradient direction (momentum) and squared gradient magnitude. Adapts the learning rate per parameter. Default choice for most deep learning.', speed:90, gen:75, ease:85 },
+  { name:'RMSProp', tag:'Root Mean Square Propagation', tagCol:'#ffd166', desc:'Divides the learning rate by a moving average of squared gradients. Handles non-stationary objectives well — great for recurrent networks.', speed:75, gen:70, ease:80 },
+  { name:'AdaGrad', tag:'Adaptive Gradient', tagCol:'#ff7eb3', desc:'Accumulates squared gradients and uses them to scale the learning rate. Good for sparse data (NLP) but learning rate shrinks to near-zero over time.', speed:60, gen:65, ease:75 },
+];
+
+const optGrid = document.getElementById('optGrid');
+optimizers.forEach(o => {
+  const bars = [
+    { label:'Training speed', val:o.speed, color:o.tagCol },
+    { label:'Generalization', val:o.gen, color:o.tagCol },
+    { label:'Ease of tuning', val:o.ease, color:o.tagCol },
+  ];
+  const card = document.createElement('div');
+  card.className = 'opt-card';
+  card.innerHTML = `
+    <div class="opt-name">${o.name}</div>
+    <div class="opt-tag" style="background:${o.tagCol}22;color:${o.tagCol}">${o.tag}</div>
+    <div class="opt-desc">${o.desc}</div>
+    <div class="opt-bar-wrap">
+      ${bars.map(b => `
+        <div style="margin-top:10px">
+          <div class="opt-bar-label"><span>${b.label}</span><span style="color:${b.color}">${b.val}%</span></div>
+          <div class="opt-bar"><div class="opt-bar-fill" style="width:0%;background:${b.color}" data-w="${b.val}"></div></div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  optGrid.appendChild(card);
+});
+
+// Animate bars when visible
+const barObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.querySelectorAll('.opt-bar-fill').forEach(bar => {
+        setTimeout(() => { bar.style.width = bar.dataset.w + '%'; }, 200);
+      });
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('.opt-card').forEach(c => barObserver.observe(c));
+
+// ── LIVE DEMO ──
+const lrSlider = document.getElementById('lrSlider');
+const layersSlider = document.getElementById('layersSlider');
+const neuronsSlider = document.getElementById('neuronsSlider');
+
+const lrVals = ['0.001','0.003','0.01','0.03','0.1','0.3','1','3','10','30'];
+lrSlider.oninput = () => document.getElementById('lrVal').textContent = lrVals[lrSlider.value-1];
+layersSlider.oninput = () => document.getElementById('layersVal').textContent = layersSlider.value;
+neuronsSlider.oninput = () => document.getElementById('neuronsVal').textContent = neuronsSlider.value;
+
+let demoChart = null;
+let trainingInterval = null;
+let isRunning = false;
+let epoch = 0;
+const MAX_EPOCH = 2000;
+let trainHistory = [], testHistory = [];
+
+function initDemoChart() {
+  if (demoChart) demoChart.destroy();
+  const ctx = document.getElementById('demoChart').getContext('2d');
+  demoChart = new Chart(ctx, {
+    type:'line',
+    data:{ labels:[], datasets:[
+      { label:'Training Loss', data:[], borderColor:'#4da6ff', borderWidth:2, pointRadius:0, tension:.3, fill:false },
+      { label:'Test Loss', data:[], borderColor:'#ff6b6b', borderWidth:2, pointRadius:0, tension:.3, fill:false, borderDash:[5,3] }
+    ]},
+    options:{
+      responsive:true, animation:{duration:0},
+      plugins:{ legend:{ labels:{ color:'#7a788a', font:{size:11}, boxWidth:16 } } },
+      scales:{
+        x:{ title:{display:true,text:'Epoch',color:'#7a788a',font:{size:11}}, grid:{color:'rgba(255,255,255,0.04)'}, ticks:{color:'#7a788a',maxTicksLimit:8} },
+        y:{ title:{display:true,text:'Loss',color:'#7a788a',font:{size:11}}, grid:{color:'rgba(255,255,255,0.04)'}, ticks:{color:'#7a788a',maxTicksLimit:6} }
+      }
+    }
+  });
+}
+
+function toggleTraining() {
+  if (isRunning) {
+    stopTraining();
+  } else {
+    startTraining();
+  }
+}
+
+function startTraining() {
+  isRunning = true;
+  epoch = 0;
+  trainHistory = [];
+  testHistory = [];
+  const btn = document.getElementById('runBtn');
+  btn.textContent = '■ Stop Training';
+  btn.classList.add('running');
+  document.getElementById('statusVal').textContent = 'Training…';
+  document.getElementById('statusVal').style.color = 'var(--teal)';
+  initDemoChart();
+
+  const lr = parseFloat(lrVals[lrSlider.value-1]);
+  const layers = parseInt(layersSlider.value);
+  const neurons = parseInt(neuronsSlider.value);
+  const act = document.getElementById('actSelect').value;
+  const reg = document.getElementById('regSelect').value;
+
+  const complexity = layers * neurons;
+  const lrFactor = lr <= 0.01 ? 0.5 : lr >= 1 ? 1.5 : 1;
+  const actFactor = act === 'tanh' ? 1 : act === 'relu' ? 0.9 : 1.1;
+  const regFactor = reg === 'L1' ? 0.85 : reg === 'L2' ? 0.88 : 1;
+  const baseTrain = 0.001 * actFactor;
+  const baseTest = baseTrain + (complexity < 20 ? 0.08 : 0.05) * regFactor;
+  const convergenceRate = 0.003 * lrFactor;
+  const noiseAmp = lr >= 0.3 ? 0.015 : 0.004;
+
+  const STEP = 10;
+  trainingInterval = setInterval(() => {
+    if (epoch >= MAX_EPOCH) { stopTraining(true); return; }
+    epoch += STEP;
+    const t = epoch / MAX_EPOCH;
+    const noise = () => (Math.random()-0.5) * noiseAmp;
+    const trainLoss = Math.max(baseTrain, (0.9 - baseTrain) * Math.exp(-convergenceRate * epoch) + baseTrain + noise());
+    const testLoss = Math.max(baseTest, (0.88 - baseTest) * Math.exp(-convergenceRate * 0.8 * epoch) + baseTest + noise() * 1.5);
+
+    trainHistory.push(trainLoss);
+    testHistory.push(testLoss);
+    demoChart.data.labels.push(epoch);
+    demoChart.data.datasets[0].data.push(trainLoss);
+    demoChart.data.datasets[1].data.push(testLoss);
+    demoChart.update('none');
+
+    document.getElementById('epochFill').style.width = (epoch/MAX_EPOCH*100) + '%';
+    document.getElementById('epochVal').textContent = epoch.toLocaleString();
+    document.getElementById('trainLossVal').textContent = trainLoss.toFixed(4);
+    document.getElementById('testLossVal').textContent = testLoss.toFixed(4);
+  }, 30);
+}
+
+function stopTraining(completed) {
+  isRunning = false;
+  clearInterval(trainingInterval);
+  const btn = document.getElementById('runBtn');
+  btn.textContent = '▶ Start Training';
+  btn.classList.remove('running');
+  document.getElementById('statusVal').textContent = completed ? 'Complete ✓' : 'Stopped';
+  document.getElementById('statusVal').style.color = completed ? 'var(--teal)' : 'var(--muted)';
+}
+
+initDemoChart();
+
+// ── SCROLL REVEAL ──
+const revealObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+</script>
+</body>
+</html>
