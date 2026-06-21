@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Responsible AI Framework — IronBridge Manufacturing</title>
+<style>
+  /* ── Design tokens ── */
+  :root {
+    --navy: #0D1B2A;
+    --navy-mid: #1B2E45;
+    --navy-light: #243B55;
+    --teal: #0891B2;
+    --teal-light: #06B6D4;
+    --mint: #67E8F9;
+    --white: #FFFFFF;
+    --off-white: #F0F9FF;
+    --slate: #64748B;
+    --light-gray: #E2E8F0;
+    --accent: #F59E0B;
+    --accent-soft: #FEF3C7;
+    --dark: #0F172A;
+
+    --font-display: 'Georgia', 'Times New Roman', serif;
+    --font-body: 'Calibri', 'Segoe UI', Arial, sans-serif;
+    --font-mono: 'Courier New', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--navy);
+    color: var(--white);
+    line-height: 1.6;
+  }
+
+  /* ── Navigation ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(13, 27, 42, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(8, 145, 178, 0.3);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+  }
+
+  .nav-brand {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--mint);
+    letter-spacing: 0.02em;
+  }
+
+  .nav-links {
+    display: flex; gap: 1.5rem; list-style: none;
+  }
+
+  .nav-links a {
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--mint); }
+
+  /* ── Hero ── */
+  .hero {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0D1B2A 0%, #1B2E45 50%, #0D3349 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 6rem 2rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 50%, rgba(8,145,178,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 20%, rgba(103,232,249,0.08) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--teal-light);
+    margin-bottom: 1.5rem;
+    font-family: var(--font-body);
+  }
+
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 5vw, 4.2rem);
+    line-height: 1.15;
+    color: var(--white);
+    max-width: 800px;
+    margin-bottom: 1.2rem;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--mint);
+  }
+
+  .hero-sub {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.65);
+    max-width: 640px;
+    margin-bottom: 3rem;
+  }
+
+  .hero-tags {
+    display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center;
+    margin-bottom: 3rem;
+  }
+
+  .tag {
+    background: rgba(8,145,178,0.18);
+    border: 1px solid rgba(8,145,178,0.35);
+    color: var(--mint);
+    font-size: 0.78rem;
+    padding: 0.3rem 0.9rem;
+    border-radius: 20px;
+    letter-spacing: 0.03em;
+  }
+
+  .hero-cta {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: var(--teal);
+    color: var(--white);
+    text-decoration: none;
+    padding: 0.85rem 2rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: background 0.2s, transform 0.15s;
+  }
+
+  .hero-cta:hover { background: var(--teal-light); transform: translateY(-1px); }
+
+  .hero-scroll {
+    position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+    color: rgba(255,255,255,0.3);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    animation: bounce 2s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(6px); }
+  }
+
+  /* ── Section shell ── */
+  section {
+    padding: 5rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-wrap { padding: 5rem 0; }
+  .section-wrap.dark { background: var(--navy); }
+  .section-wrap.mid { background: var(--navy-mid); }
+  .section-wrap.light { background: var(--off-white); color: var(--dark); }
+
+  .section-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--teal-light);
+    margin-bottom: 0.5rem;
+    font-family: var(--font-body);
+  }
+
+  .section-wrap.light .section-eyebrow { color: var(--teal); }
+
+  h2.section-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-wrap.light h2.section-title { color: var(--dark); }
+
+  .section-lead {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.55);
+    max-width: 640px;
+    margin-bottom: 3rem;
+  }
+
+  .section-wrap.light .section-lead { color: var(--slate); }
+
+  /* ── Module grid (overview) ── */
+  .module-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .module-card {
+    background: var(--navy-light);
+    border: 1px solid rgba(8,145,178,0.2);
+    border-radius: 10px;
+    padding: 1.2rem 1rem;
+    transition: border-color 0.2s, transform 0.15s;
+    cursor: default;
+  }
+
+  .module-card:hover {
+    border-color: var(--teal);
+    transform: translateY(-2px);
+  }
+
+  .module-num {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: var(--teal-light);
+    margin-bottom: 0.5rem;
+  }
+
+  .module-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  /* ── Principles grid ── */
+  .principles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.2rem;
+  }
+
+  .principle-card {
+    background: var(--navy-mid);
+    border-left: 3px solid var(--teal);
+    border-radius: 8px;
+    padding: 1.4rem 1.4rem 1.4rem 1.6rem;
+  }
+
+  .section-wrap.light .principle-card {
+    background: var(--white);
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    border-left-color: var(--teal);
+  }
+
+  .principle-card h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--mint);
+    margin-bottom: 0.5rem;
+  }
+
+  .section-wrap.light .principle-card h3 { color: var(--teal); }
+
+  .principle-card p { font-size: 0.88rem; color: rgba(255,255,255,0.72); line-height: 1.55; }
+  .section-wrap.light .principle-card p { color: var(--slate); }
+
+  /* ── Timeline ── */
+  .timeline {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .timeline-phase {
+    background: var(--navy-mid);
+    padding: 1.6rem 1.2rem;
+  }
+
+  .timeline-phase:first-child { background: var(--navy-light); }
+
+  .phase-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--teal-light);
+    margin-bottom: 0.3rem;
+  }
+
+  .phase-title {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--white);
+    margin-bottom: 1rem;
+  }
+
+  .phase-items { list-style: none; }
+  .phase-items li {
+    font-size: 0.83rem;
+    color: rgba(255,255,255,0.65);
+    padding: 0.4rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex; gap: 0.5rem;
+  }
+
+  .phase-items li::before {
+    content: '→';
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  /* ── Roles table ── */
+  .roles-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+
+  .roles-table th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    background: var(--navy-light);
+    color: var(--mint);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--teal);
+  }
+
+  .roles-table td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    vertical-align: top;
+  }
+
+  .roles-table tr:hover td { background: rgba(8,145,178,0.06); }
+
+  .role-name { font-weight: 600; color: var(--teal-light); }
+
+  /* ── Metrics grid ── */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.2rem;
+  }
+
+  .metric-card {
+    background: var(--white);
+    border-radius: 10px;
+    padding: 1.4rem;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  }
+
+  .metric-cat {
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 0.6rem;
+    font-weight: 700;
+  }
+
+  .metric-items { list-style: none; }
+  .metric-items li {
+    font-size: 0.84rem;
+    color: var(--slate);
+    padding: 0.35rem 0;
+    border-bottom: 1px solid var(--light-gray);
+    display: flex; gap: 0.5rem; align-items: baseline;
+  }
+
+  .metric-items li::before {
+    content: '▸';
+    color: var(--teal);
+    font-size: 0.7rem;
+    flex-shrink: 0;
+  }
+
+  .metric-items li:last-child { border-bottom: none; }
+
+  /* ── Lifecycle ── */
+  .lifecycle-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.8rem;
+  }
+
+  .lifecycle-step {
+    background: var(--navy-light);
+    border-radius: 8px;
+    padding: 1.2rem 1rem;
+    border-top: 3px solid var(--teal);
+    transition: border-color 0.2s;
+  }
+
+  .lifecycle-step:nth-child(8) { border-top-color: var(--accent); }
+  .lifecycle-step:hover { border-top-color: var(--mint); }
+
+  .step-num {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: rgba(8,145,178,0.3);
+    margin-bottom: 0.3rem;
+    font-family: var(--font-display);
+  }
+
+  .step-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 0.5rem;
+  }
+
+  .step-rai {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.5;
+  }
+
+  /* ── Risk cards ── */
+  .risk-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.4rem;
+  }
+
+  .risk-card {
+    background: var(--navy-mid);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .risk-header {
+    padding: 1rem 1.2rem;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--white);
+  }
+
+  .risk-header.transparency { background: var(--teal); }
+  .risk-header.bias { background: #D97706; }
+  .risk-header.privacy { background: #6366F1; }
+
+  .risk-body {
+    padding: 1.2rem;
+  }
+
+  .risk-body li {
+    font-size: 0.84rem;
+    color: rgba(255,255,255,0.72);
+    padding: 0.45rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    display: flex; gap: 0.5rem;
+    line-height: 1.4;
+    list-style: none;
+  }
+
+  .risk-body li:last-child { border-bottom: none; }
+
+  .risk-body li::before {
+    content: '◆';
+    font-size: 0.5rem;
+    color: rgba(255,255,255,0.3);
+    margin-top: 0.4rem;
+    flex-shrink: 0;
+  }
+
+  /* ── Two column ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+
+  .col-head {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--teal-light);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(8,145,178,0.3);
+  }
+
+  .col-list { list-style: none; }
+  .col-list li {
+    font-size: 0.86rem;
+    color: rgba(255,255,255,0.65);
+    padding: 0.55rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex; gap: 0.5rem; align-items: flex-start;
+    line-height: 1.45;
+  }
+
+  .col-list li::before {
+    content: '→';
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: 0.05rem;
+  }
+
+  /* ── Long-term impacts ── */
+  .impact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.4rem;
+  }
+
+  .impact-card {
+    background: var(--white);
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  }
+
+  .impact-card h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+
+  .impact-item { margin-bottom: 1rem; }
+
+  .impact-item-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 0.2rem;
+  }
+
+  .impact-item-text {
+    font-size: 0.82rem;
+    color: var(--slate);
+    line-height: 1.5;
+  }
+
+  /* ── Best practices ── */
+  .bp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+
+  .bp-card {
+    background: var(--navy-light);
+    border-radius: 8px;
+    padding: 1.2rem;
+    border-bottom: 3px solid var(--teal);
+    transition: transform 0.15s;
+  }
+
+  .bp-card:hover { transform: translateY(-2px); }
+
+  .bp-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+
+  .bp-text {
+    font-size: 0.83rem;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.5;
+  }
+
+  /* ── References ── */
+  .ref-list { list-style: none; }
+  .ref-list li {
+    font-size: 0.83rem;
+    color: rgba(255,255,255,0.6);
+    padding: 0.85rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    gap: 0.5rem;
+    line-height: 1.5;
+  }
+
+  .ref-list li:first-child, .ref-list li:nth-child(2) {
+    color: var(--mint);
+    font-weight: 600;
+  }
+
+  .ref-num {
+    font-weight: 700;
+    color: var(--teal);
+    font-size: 0.78rem;
+    padding-top: 0.1rem;
+  }
+
+  /* ── Footer ── */
+  footer {
+    background: #060E17;
+    border-top: 1px solid rgba(8,145,178,0.2);
+    padding: 2rem;
+    text-align: center;
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.3);
+  }
+
+  footer strong { color: var(--mint); }
+
+  /* ── Governance viz ── */
+  .gov-tree {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .gov-row {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
+    position: relative;
+  }
+
+  .gov-node {
+    border-radius: 8px;
+    padding: 0.75rem 1.2rem;
+    text-align: center;
+    font-size: 0.82rem;
+    font-weight: 600;
+    min-width: 160px;
+  }
+
+  .gov-node.tier1 { background: var(--navy-light); border: 1px solid var(--teal); color: var(--mint); }
+  .gov-node.tier2 { background: var(--teal); color: var(--white); }
+  .gov-node.tier3 { background: var(--navy-mid); border: 1px solid rgba(8,145,178,0.4); color: var(--white); }
+  .gov-node.tier4 { background: rgba(100,116,139,0.25); border: 1px solid rgba(100,116,139,0.4); color: rgba(255,255,255,0.65); font-size: 0.75rem; }
+
+  .gov-node sub { display: block; font-weight: 400; font-size: 0.7rem; opacity: 0.7; margin-top: 0.2rem; }
+
+  .gov-connector {
+    width: 2px;
+    height: 1.5rem;
+    background: rgba(8,145,178,0.4);
+    margin: 0 auto;
+  }
+
+  .gov-hline {
+    height: 2px;
+    background: rgba(8,145,178,0.25);
+    width: 60%;
+    margin: 0 auto;
+  }
+
+  /* ── Stat callout ── */
+  .stat-row {
+    display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 3rem;
+  }
+
+  .stat-box {
+    background: var(--navy-mid);
+    border-radius: 10px;
+    padding: 1.2rem 1.5rem;
+    text-align: center;
+    min-width: 130px;
+  }
+
+  .stat-val {
+    font-family: var(--font-display);
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--mint);
+    line-height: 1;
+  }
+
+  .stat-label { font-size: 0.75rem; color: rgba(255,255,255,0.5); margin-top: 0.3rem; }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    .timeline { grid-template-columns: 1fr 1fr; }
+    .lifecycle-grid { grid-template-columns: repeat(2, 1fr); }
+    .risk-grid { grid-template-columns: 1fr; }
+    .impact-grid { grid-template-columns: 1fr; }
+    .two-col { grid-template-columns: 1fr; }
+    nav .nav-links { display: none; }
+  }
+
+  @media (max-width: 600px) {
+    .timeline { grid-template-columns: 1fr; }
+    .lifecycle-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 2rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav>
+  <div class="nav-brand">IronBridge RAI Framework</div>
+  <ul class="nav-links">
+    <li><a href="#principles">Principles</a></li>
+    <li><a href="#governance">Governance</a></li>
+    <li><a href="#timeline">Timeline</a></li>
+    <li><a href="#metrics">Metrics</a></li>
+    <li><a href="#lifecycle">Lifecycle</a></li>
+    <li><a href="#risks">Risks</a></li>
+    <li><a href="#impacts">Impacts</a></li>
+    <li><a href="#references">References</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<div class="hero">
+  <p class="hero-eyebrow">RAI Capstone Framework · IronBridge Manufacturing · 2025</p>
+  <h1>Responsible AI is a <em>practice</em>, not a destination.</h1>
+  <p class="hero-sub">A comprehensive, actionable governance system for ethical, transparent, and accountable AI deployment across IronBridge operations.</p>
+  <div class="hero-tags">
+    <span class="tag">NIST AI RMF Aligned</span>
+    <span class="tag">EU AI Act Ready</span>
+    <span class="tag">Human-in-the-Loop</span>
+    <span class="tag">Cyborg-Centaur Model</span>
+    <span class="tag">Manufacturing Context</span>
+  </div>
+  <a href="#overview" class="hero-cta">Explore the Framework ↓</a>
+  <div class="hero-scroll">↓ scroll</div>
+</div>
+
+<!-- Overview -->
+<div class="section-wrap dark" id="overview">
+  <section>
+    <p class="section-eyebrow">Framework Overview</p>
+    <h2 class="section-title">12 integrated modules</h2>
+    <p class="section-lead">Each module builds on prior RAI assignments and integrates feedback from course instructors, combining principles, governance, metrics, and lifecycle guidance into a unified system.</p>
+    <div class="module-grid">
+      <div class="module-card"><div class="module-num">MODULE 01</div><div class="module-label">Ethical Principles</div></div>
+      <div class="module-card"><div class="module-num">MODULE 02</div><div class="module-label">Governance Structure</div></div>
+      <div class="module-card"><div class="module-num">MODULE 03</div><div class="module-label">Roles & Responsibilities</div></div>
+      <div class="module-card"><div class="module-num">MODULE 04</div><div class="module-label">Implementation Timeline</div></div>
+      <div class="module-card"><div class="module-num">MODULE 05</div><div class="module-label">Employee RAI Training</div></div>
+      <div class="module-card"><div class="module-num">MODULE 06</div><div class="module-label">RAI Metrics</div></div>
+      <div class="module-card"><div class="module-num">MODULE 07</div><div class="module-label">AI Dev Lifecycle</div></div>
+      <div class="module-card"><div class="module-num">MODULE 08</div><div class="module-label">Risk Evaluation Guidelines</div></div>
+      <div class="module-card"><div class="module-num">MODULE 09</div><div class="module-label">User Monitoring & Education</div></div>
+      <div class="module-card"><div class="module-num">MODULE 10</div><div class="module-label">Long-Term Impacts</div></div>
+      <div class="module-card"><div class="module-num">MODULE 11</div><div class="module-label">Best Practices</div></div>
+      <div class="module-card"><div class="module-num">MODULE 12</div><div class="module-label">APA References</div></div>
+    </div>
+  </section>
+</div>
+
+<!-- Principles -->
+<div class="section-wrap light" id="principles">
+  <section>
+    <p class="section-eyebrow">Module 01</p>
+    <h2 class="section-title">Ethical Principles Statement</h2>
+    <p class="section-lead">Six commitments that govern every AI system IronBridge deploys — not aspirational buzzwords, but operational constraints with named owners and measurable outcomes.</p>
+    <div class="principles-grid">
+      <div class="principle-card">
+        <h3>Human Dignity</h3>
+        <p>AI systems will never diminish the rights, safety, or dignity of workers, customers, or communities. Workers retain the right to contest any AI-influenced decision affecting their employment or safety.</p>
+      </div>
+      <div class="principle-card">
+        <h3>Fairness & Non-Discrimination</h3>
+        <p>We actively detect and mitigate bias across all AI models. Demographic parity ratio ≥ 0.80 and equalized odds difference &lt; 0.05 are enforced production thresholds, not aspirational targets.</p>
+      </div>
+      <div class="principle-card">
+        <h3>Transparency</h3>
+        <p>Decision logic is explainable to affected parties. Mandatory SHAP/LIME explanations for Tier 1 decisions. Affected individuals may request explanations within 30 days.</p>
+      </div>
+      <div class="principle-card">
+        <h3>Accountability</h3>
+        <p>Named owners hold responsibility at every AI lifecycle stage. Harm incidents trigger root-cause analysis and remediation within 30 days. The AI Ethics Officer owns incident log governance.</p>
+      </div>
+      <div class="principle-card">
+        <h3>Privacy & Security</h3>
+        <p>Data minimization, AES-256 encryption at rest, and TLS 1.3 in transit protect all personal and proprietary data. GDPR/CCPA compliance is validated quarterly by Legal & Compliance.</p>
+      </div>
+      <div class="principle-card">
+        <h3>Sustainability</h3>
+        <p>AI deployment decisions weigh long-term environmental, social, and economic impacts. Annual impact reviews feed Board-level strategic AI planning, not just operational reporting.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Governance -->
+<div class="section-wrap dark" id="governance">
+  <section>
+    <p class="section-eyebrow">Module 02</p>
+    <h2 class="section-title">RAI Governance Structure</h2>
+    <p class="section-lead">Three-tier governance ensures AI accountability flows from the boardroom to the factory floor. Independent Ethics Review handles high-risk use cases before deployment approval.</p>
+    <div class="gov-tree">
+      <div class="gov-row">
+        <div class="gov-node tier1">Board AI Committee<sub>Quarterly strategic oversight</sub></div>
+      </div>
+      <div class="gov-connector"></div>
+      <div class="gov-row">
+        <div class="gov-node tier2">C-Suite AI Sponsor (CTO)<sub>Executive accountability & championing</sub></div>
+      </div>
+      <div class="gov-connector"></div>
+      <div class="gov-hline"></div>
+      <div class="gov-row" style="gap:2rem; margin-top:0">
+        <div class="gov-node tier3">RAI Steering Committee<sub>Cross-functional policy · monthly</sub></div>
+        <div class="gov-node tier3">AI Ethics Review Board<sub>High-risk use case review</sub></div>
+      </div>
+      <div class="gov-connector"></div>
+      <div class="gov-row" style="gap:0.6rem; flex-wrap:wrap; margin-top:0">
+        <div class="gov-node tier4">AI Product Owners</div>
+        <div class="gov-node tier4">Data Governance</div>
+        <div class="gov-node tier4">Legal & Compliance</div>
+        <div class="gov-node tier4">Employee RAI Reps</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Roles -->
+<div class="section-wrap mid" id="roles">
+  <section>
+    <p class="section-eyebrow">Module 03</p>
+    <h2 class="section-title">Key Roles & Responsibilities</h2>
+    <p class="section-lead">Eight named roles with specific, accountable duties — not generalized job descriptions. Every AI system must have an identified owner for each of these roles.</p>
+    <table class="roles-table">
+      <thead>
+        <tr>
+          <th>Role</th>
+          <th>Core Responsibility</th>
+          <th>Key Deliverable</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="role-name">Chief AI Officer (CAIO)</td><td>Owns RAI strategy; reports to Board quarterly; approves high-risk deployments</td><td>Annual RAI transparency report</td></tr>
+        <tr><td class="role-name">AI Ethics Officer</td><td>Reviews high-risk use cases; develops ethical guidelines; leads incident investigations</td><td>Ethics review sign-off per deployment</td></tr>
+        <tr><td class="role-name">AI Product Owner</td><td>Ensures each AI system has current risk assessment, bias audit, and user impact review on file</td><td>Model card & risk register</td></tr>
+        <tr><td class="role-name">Data Steward</td><td>Manages data lineage, access controls, consent records, and data minimization compliance</td><td>Data lineage documentation</td></tr>
+        <tr><td class="role-name">ML Engineer / Data Scientist</td><td>Documents model cards; runs fairness metrics; flags distributional shift before handoff</td><td>Bias audit report per model</td></tr>
+        <tr><td class="role-name">Human-in-the-Loop Reviewer</td><td>Validates AI recommendations in high-stakes workflows (safety, hiring, credit). Overrides recorded.</td><td>Override log with rationale</td></tr>
+        <tr><td class="role-name">RAI Training Coordinator</td><td>Designs, schedules, and tracks completion of mandatory RAI training for all employees</td><td>Training completion dashboard</td></tr>
+        <tr><td class="role-name">Employee RAI Representative</td><td>Elected workforce voice. Reports concerns, gathers feedback, participates in governance meetings.</td><td>Quarterly workforce sentiment report</td></tr>
+      </tbody>
+    </table>
+  </section>
+</div>
+
+<!-- Timeline -->
+<div class="section-wrap dark" id="timeline">
+  <section>
+    <p class="section-eyebrow">Module 04</p>
+    <h2 class="section-title">RAI Accountability Timeline</h2>
+    <p class="section-lead">Four-quarter rollout from foundation through maturity. Each phase ends with concrete deliverables, not just milestones.</p>
+    <div class="timeline">
+      <div class="timeline-phase">
+        <div class="phase-label">Q1 2025</div>
+        <div class="phase-title">Foundation</div>
+        <ul class="phase-items">
+          <li>Appoint CAIO & Ethics Officer</li>
+          <li>Publish Ethical Principles</li>
+          <li>Stand up Steering Committee</li>
+          <li>Baseline AI inventory audit</li>
+        </ul>
+      </div>
+      <div class="timeline-phase">
+        <div class="phase-label">Q2 2025</div>
+        <div class="phase-title">Policy & Process</div>
+        <ul class="phase-items">
+          <li>Release RAI Policy v1.0</li>
+          <li>Launch mandatory training (all staff)</li>
+          <li>Deploy bias audit tooling</li>
+          <li>Establish incident log</li>
+        </ul>
+      </div>
+      <div class="timeline-phase">
+        <div class="phase-label">Q3 2025</div>
+        <div class="phase-title">Operations</div>
+        <ul class="phase-items">
+          <li>Complete model card library</li>
+          <li>First quarterly Board report</li>
+          <li>Activate human-in-the-loop for Tier 1 AI</li>
+          <li>User monitoring dashboard live</li>
+        </ul>
+      </div>
+      <div class="timeline-phase">
+        <div class="phase-label">Q4 2025</div>
+        <div class="phase-title">Maturity & Scale</div>
+        <ul class="phase-items">
+          <li>Annual RAI maturity assessment</li>
+          <li>Expand to global operations</li>
+          <li>Publish external transparency report</li>
+          <li>Continuous improvement cycle starts</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Training -->
+<div class="section-wrap light" id="training">
+  <section>
+    <p class="section-eyebrow">Module 05</p>
+    <h2 class="section-title">Employee RAI Training Program</h2>
+    <p class="section-lead">Three-tiered curriculum ensures every IronBridge employee has appropriate RAI knowledge for their role. Completion tracked in LMS with annual refresh cycles.</p>
+    <div class="stat-row" style="margin-bottom:2rem;">
+      <div class="stat-box" style="background:var(--navy);"><div class="stat-val">100%</div><div class="stat-label">Mandatory coverage target</div></div>
+      <div class="stat-box" style="background:var(--navy);"><div class="stat-val">90%</div><div class="stat-label">Minimum pass rate to advance</div></div>
+      <div class="stat-box" style="background:var(--navy);"><div class="stat-val">30 days</div><div class="stat-label">New hire onboarding window</div></div>
+      <div class="stat-box" style="background:var(--navy);"><div class="stat-val">3 tiers</div><div class="stat-label">Role-based curriculum levels</div></div>
+    </div>
+    <div class="principles-grid">
+      <div class="principle-card">
+        <h3>Tier 1 — All Employees (2 hrs/yr)</h3>
+        <p>RAI fundamentals & ethics · Identifying AI in daily work · Reporting concerns & bias incidents · Data privacy basics. Delivered via LMS with scenario-based assessment.</p>
+      </div>
+      <div class="principle-card">
+        <h3>Tier 2 — AI Users & Managers (8 hrs/yr)</h3>
+        <p>Understanding AI outputs & limitations · Human-in-the-loop decision making · Documenting AI-assisted decisions · Avoiding automation bias. Role-specific simulations included.</p>
+      </div>
+      <div class="principle-card">
+        <h3>Tier 3 — AI Builders & Owners (24 hrs/yr)</h3>
+        <p>Model card authorship · Bias detection & mitigation methods · Lifecycle risk assessments · Regulatory compliance (EU AI Act, NIST RMF). External certification pathway supported.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Metrics -->
+<div class="section-wrap light" id="metrics">
+  <section>
+    <p class="section-eyebrow">Module 06</p>
+    <h2 class="section-title">Effective RAI Metrics</h2>
+    <p class="section-lead">24 specific, measurable KPIs across 6 categories. Reviewed monthly by the Steering Committee. Thresholds are hard limits, not aspirational targets.</p>
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-cat">⚖ Fairness</div>
+        <ul class="metric-items">
+          <li>Demographic parity ratio ≥ 0.80</li>
+          <li>Equalized odds difference &lt; 0.05</li>
+          <li>Disparate impact ratio (80% rule)</li>
+          <li>Representation in training data by cohort</li>
+        </ul>
+      </div>
+      <div class="metric-card">
+        <div class="metric-cat">🔍 Transparency</div>
+        <ul class="metric-items">
+          <li>% of Tier 1 decisions with explanation</li>
+          <li>Avg. explanation quality score (user survey)</li>
+          <li>Audit log completeness rate</li>
+          <li>Model card coverage of AI asset inventory</li>
+        </ul>
+      </div>
+      <div class="metric-card">
+        <div class="metric-cat">🔒 Privacy & Compliance</div>
+        <ul class="metric-items">
+          <li>Data minimization compliance %</li>
+          <li>PII exposure incidents per quarter</li>
+          <li>GDPR/CCPA response time (target: &lt;72 hrs)</li>
+          <li>Consent record coverage rate</li>
+        </ul>
+      </div>
+      <div class="metric-card">
+        <div class="metric-cat">📊 Reliability</div>
+        <ul class="metric-items">
+          <li>Model accuracy drift threshold (±2%)</li>
+          <li>False positive/negative rates by cohort</li>
+          <li>Data quality score per pipeline</li>
+          <li>Mean time to detect distributional shift</li>
+        </ul>
+      </div>
+      <div class="metric-card">
+        <div class="metric-cat">📋 Governance</div>
+        <ul class="metric-items">
+          <li>Training completion rate (target: 100%)</li>
+          <li>Incident resolution time (target: ≤30 days)</li>
+          <li>Risk assessment coverage of AI assets</li>
+          <li>Policy review cycle adherence</li>
+        </ul>
+      </div>
+      <div class="metric-card">
+        <div class="metric-cat">👁 Human Oversight</div>
+        <ul class="metric-items">
+          <li>Override rate on AI recommendations</li>
+          <li>Human review coverage for Tier 1 AI</li>
+          <li>Avg. time to human review (hrs)</li>
+          <li>Reviewer agreement rate with AI output</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Lifecycle -->
+<div class="section-wrap dark" id="lifecycle">
+  <section>
+    <p class="section-eyebrow">Module 07</p>
+    <h2 class="section-title">AI Development Lifecycle</h2>
+    <p class="section-lead">RAI actions embedded at every stage — from first idea to decommissioning. Disposition is not an afterthought; it is a planned gate with data deletion and lessons-learned requirements.</p>
+    <div class="lifecycle-grid">
+      <div class="lifecycle-step">
+        <div class="step-num">01</div>
+        <div class="step-title">Ideation</div>
+        <div class="step-rai">Ethics pre-screen · stakeholder impact assessment · define intended use boundaries</div>
+      </div>
+      <div class="lifecycle-step">
+        <div class="step-num">02</div>
+        <div class="step-title">Data Collection</div>
+        <div class="step-rai">Data lineage docs · consent verification · PII minimization · bias sampling audit</div>
+      </div>
+      <div class="lifecycle-step">
+        <div class="step-num">03</div>
+        <div class="step-title">Model Design</div>
+        <div class="step-rai">Fairness constraints applied · explainability method selected · model card drafted</div>
+      </div>
+      <div class="lifecycle-step">
+        <div class="step-num">04</div>
+        <div class="step-title">Training & Testing</div>
+        <div class="step-rai">Bias metrics run · adversarial testing · red-team review with manufacturing workers</div>
+      </div>
+      <div class="lifecycle-step">
+        <div class="step-num">05</div>
+        <div class="step-title">Ethics Review</div>
+        <div class="step-rai">AI Ethics Review Board sign-off · risk tier assigned (1–3) · legal clearance required</div>
+      </div>
+      <div class="lifecycle-step">
+        <div class="step-num">06</div>
+        <div class="step-title">Deployment</div>
+        <div class="step-rai">Human-in-the-loop activated · monitoring dashboard configured · user notice published</div>
+      </div>
+      <div class="lifecycle-step">
+        <div class="step-num">07</div>
+        <div class="step-title">Monitoring</div>
+        <div class="step-rai">Monthly metric review · drift alerts · quarterly stakeholder report · incident log active</div>
+      </div>
+      <div class="lifecycle-step">
+        <div class="step-num">08</div>
+        <div class="step-title">Disposition</div>
+        <div class="step-rai">Decommission plan · data deletion per retention policy · lessons-learned documentation</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Risks -->
+<div class="section-wrap mid" id="risks">
+  <section>
+    <p class="section-eyebrow">Module 08</p>
+    <h2 class="section-title">RAI Risk Evaluation Guidelines</h2>
+    <p class="section-lead">Three critical risk domains with specific, actionable controls mapped to IronBridge's manufacturing context and regulatory environment.</p>
+    <div class="risk-grid">
+      <div class="risk-card">
+        <div class="risk-header transparency">Transparency & Explainability</div>
+        <ul class="risk-body">
+          <li>Mandatory SHAP/LIME explanations for all Tier 1 decisions affecting workers or customers</li>
+          <li>Plain-language summaries required for non-technical stakeholders</li>
+          <li>Audit trail: model version + input → output retained for 7 years</li>
+          <li>Affected individuals can request explanation within 30 days (EU AI Act Art. 13)</li>
+        </ul>
+      </div>
+      <div class="risk-card">
+        <div class="risk-header bias">Data Bias</div>
+        <ul class="risk-body">
+          <li>Pre-training: stratified sampling; representation audit of training data</li>
+          <li>In-training: fairness constraints applied (IBM AI Fairness 360 toolkit)</li>
+          <li>Post-training: demographic parity ≥ 0.80; equalized odds &lt; 0.05 as hard thresholds</li>
+          <li>Annual third-party bias audit for all Tier 1 & 2 AI systems; results published internally</li>
+        </ul>
+      </div>
+      <div class="risk-card">
+        <div class="risk-header privacy">Privacy, Protection & Compliance</div>
+        <ul class="risk-body">
+          <li>GDPR Art. 22 compliance for automated decisions affecting individuals; CCPA opt-out required</li>
+          <li>Data minimization: collect only fields necessary for inference — validated quarterly</li>
+          <li>AES-256 encryption at rest; TLS 1.3 in transit; zero-trust access model</li>
+          <li>Breach response plan: notify supervisory authority within 72 hours; affected users within 30 days</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- User Monitoring -->
+<div class="section-wrap dark" id="monitoring">
+  <section>
+    <p class="section-eyebrow">Module 09</p>
+    <h2 class="section-title">User Monitoring, Training & Education</h2>
+    <p class="section-lead">Continuous monitoring catches automation bias and over-reliance before they become incidents. Ongoing education keeps IronBridge's workforce current on evolving AI risks.</p>
+    <div class="two-col">
+      <div>
+        <div class="col-head">User Monitoring</div>
+        <ul class="col-list">
+          <li>Real-time dashboard: AI recommendation acceptance rate, override rate, error flags — visible to Tier 2 managers and above</li>
+          <li>Monthly cohort analysis: identify users at risk of automation bias (override rate &lt;5% triggers coaching)</li>
+          <li>Feedback loops: in-app "flag an issue" for AI outputs with 48-hour triage SLA</li>
+          <li>Quarterly user satisfaction survey on AI tools (target NPS ≥ 40)</li>
+          <li>Anomaly detection: alerts when override rate drops below 5% across a team (indicates possible over-reliance)</li>
+        </ul>
+      </div>
+      <div>
+        <div class="col-head">Ongoing Education</div>
+        <ul class="col-list">
+          <li>"AI Spotlight" monthly newsletter: real case studies, new tool updates, regulatory news in plain language</li>
+          <li>Role-based micro-modules (10–15 min): refreshed annually or within 60 days of any major incident</li>
+          <li>Lunch & Learns: quarterly sessions on emerging RAI topics (GenAI, LLMs, agentic AI)</li>
+          <li>Incident case studies: anonymized reviews shared org-wide to build RAI culture without blame</li>
+          <li>Curated external resources library: MIT Open RAI, NIST, Partnership on AI — updated quarterly</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Long-term Impacts -->
+<div class="section-wrap light" id="impacts">
+  <section>
+    <p class="section-eyebrow">Module 10</p>
+    <h2 class="section-title">Long-Term Impact Evaluation</h2>
+    <p class="section-lead">IronBridge evaluates AI impacts across two primary stakeholder groups — workers and customers — with annual reviews feeding Board-level strategic planning.</p>
+    <div class="impact-grid">
+      <div class="impact-card">
+        <h3>👷 Employee Impacts</h3>
+        <div class="impact-item">
+          <div class="impact-item-title">Job Displacement Risk</div>
+          <div class="impact-item-text">AI displaces routine tasks → mandatory reskilling program before deployment; 6-month transition support. Draws on Chen (2025) labor market displacement research.</div>
+        </div>
+        <div class="impact-item">
+          <div class="impact-item-title">Skill Evolution</div>
+          <div class="impact-item-text">Track workforce skill shift annually; partner with community colleges for retraining. Upskilling costs offset against projected productivity gains.</div>
+        </div>
+        <div class="impact-item">
+          <div class="impact-item-title">Worker Surveillance</div>
+          <div class="impact-item-text">AI-monitored performance: caps on data collected; union consultation required before any new monitoring AI is deployed.</div>
+        </div>
+        <div class="impact-item">
+          <div class="impact-item-title">Safety (Manufacturing Floor)</div>
+          <div class="impact-item-text">Human override required for all safety-critical decisions. Zero-tolerance for AI-only safety calls. Incident rate tracked against pre-AI baseline.</div>
+        </div>
+      </div>
+      <div class="impact-card">
+        <h3>🛒 Customer Impacts</h3>
+        <div class="impact-item">
+          <div class="impact-item-title">Algorithmic Discrimination</div>
+          <div class="impact-item-text">Annual disparate impact audit. Customers can contest AI-influenced decisions; human review within 5 business days. Results reported to Board.</div>
+        </div>
+        <div class="impact-item">
+          <div class="impact-item-title">Data Privacy</div>
+          <div class="impact-item-text">Explicit consent for personalization; data deletion on request within 30 days; annual privacy notice in plain language. GDPR/CCPA compliance validated quarterly.</div>
+        </div>
+        <div class="impact-item">
+          <div class="impact-item-title">Reliability of AI Outputs</div>
+          <div class="impact-item-text">SLA: AI-driven decisions carry ≥95% accuracy target; monthly validation against ground truth. Drift triggers immediate human review escalation.</div>
+        </div>
+        <div class="impact-item">
+          <div class="impact-item-title">Long-Run Brand Trust</div>
+          <div class="impact-item-text">Annual RAI transparency report published externally. Third-party audit results disclosed per Dell'Acqua et al. (2026) jagged frontier framework recommendations.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Best Practices -->
+<div class="section-wrap dark" id="practices">
+  <section>
+    <p class="section-eyebrow">Module 11</p>
+    <h2 class="section-title">Additional RAI Best Practices</h2>
+    <p class="section-lead">Eight practices drawn from course learning, instructor feedback, and applied manufacturing context. These complement the policy framework with operational wisdom.</p>
+    <div class="bp-grid">
+      <div class="bp-card">
+        <div class="bp-title">Cyborg-Centaur Hybrid Model</div>
+        <div class="bp-text">Balance full automation (Cyborg) with human-AI teaming (Centaur). Reserve full autonomy only for low-risk, easily reversible decisions.</div>
+      </div>
+      <div class="bp-card">
+        <div class="bp-title">Jagged Frontier Awareness</div>
+        <div class="bp-text">AI excels in some domains; fails unexpectedly in others. Map the frontier per use case — never assume AI capability transfers uniformly (Dell'Acqua et al., 2026).</div>
+      </div>
+      <div class="bp-card">
+        <div class="bp-title">Red-Team Before Deployment</div>
+        <div class="bp-text">Adversarial testing with diverse teams. Include manufacturing workers in QA — they surface failure modes engineers miss entirely.</div>
+      </div>
+      <div class="bp-card">
+        <div class="bp-title">Regulatory Horizon Scanning</div>
+        <div class="bp-text">Track EU AI Act, NIST AI RMF updates, and FTC AI guidance quarterly. Maintain a regulatory change log with assigned action items and owners.</div>
+      </div>
+      <div class="bp-card">
+        <div class="bp-title">Vendor RAI Due Diligence</div>
+        <div class="bp-text">All AI vendors must provide model cards, bias audit results, and data handling agreements before procurement approval. Non-negotiable contract clause.</div>
+      </div>
+      <div class="bp-card">
+        <div class="bp-title">Stakeholder Co-Design</div>
+        <div class="bp-text">Involve workers, customers, and community reps in AI design reviews — especially for high-impact manufacturing floor AI systems affecting safety or jobs.</div>
+      </div>
+      <div class="bp-card">
+        <div class="bp-title">Graceful Degradation</div>
+        <div class="bp-text">Every AI system must have a documented fallback to human process when AI fails or goes offline. Fallback tested in tabletop exercises annually.</div>
+      </div>
+      <div class="bp-card">
+        <div class="bp-title">Living Document Policy</div>
+        <div class="bp-text">RAI framework reviewed semi-annually; versioned and archived. All staff notified of material changes within 14 days. No silent updates.</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- References -->
+<div class="section-wrap mid" id="references">
+  <section>
+    <p class="section-eyebrow">Module 12</p>
+    <h2 class="section-title">Prioritized RAI References (APA)</h2>
+    <p class="section-lead">Ten or more scholarly and practitioner sources that ground this framework. References 1 and 2 are most directly applied throughout IronBridge's RAI system design.</p>
+    <ol class="ref-list">
+      <li>
+        <span class="ref-num">1</span>
+        <span>Chen, L. (2025). Labor market displacement in the age of AI: Evidence from manufacturing automation. <em>Journal of Economic Perspectives, 39</em>(1), 45–72. [Applied in Sections 10 & 11 — workforce transition planning]</span>
+      </li>
+      <li>
+        <span class="ref-num">2</span>
+        <span>Dell'Acqua, F., McFowland, E., Mollick, E. R., Lifshitz-Assaf, H., Kellogg, K., Rajendran, S., … Lakhani, K. R. (2026). Navigating the jagged technological frontier: Field experimental evidence of the effects of AI on knowledge worker productivity and quality. <em>Harvard Business School Working Paper 24-013</em>. [Applied in Cyborg-Centaur model & transparency report]</span>
+      </li>
+      <li>
+        <span class="ref-num">3</span>
+        <span>National Institute of Standards and Technology. (2023). <em>Artificial intelligence risk management framework (AI RMF 1.0)</em>. U.S. Department of Commerce. https://doi.org/10.6028/NIST.AI.100-1</span>
+      </li>
+      <li>
+        <span class="ref-num">4</span>
+        <span>European Commission. (2024). <em>EU Artificial Intelligence Act</em>. Official Journal of the European Union. https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689</span>
+      </li>
+      <li>
+        <span class="ref-num">5</span>
+        <span>Barocas, S., Hardt, M., & Narayanan, A. (2023). <em>Fairness and machine learning: Limitations and opportunities</em>. MIT Press.</span>
+      </li>
+      <li>
+        <span class="ref-num">6</span>
+        <span>Doshi-Velez, F., & Kim, B. (2017). Towards a rigorous science of interpretable machine learning. <em>arXiv:1702.08608</em>.</span>
+      </li>
+      <li>
+        <span class="ref-num">7</span>
+        <span>Partnership on AI. (2022). <em>ABOUT ML: Annotation and benchmarking on understanding and transparency of machine learning lifecycles</em>. https://partnershiponai.org</span>
+      </li>
+      <li>
+        <span class="ref-num">8</span>
+        <span>Mittelstadt, B. D., Allo, P., Taddeo, M., Wachter, S., & Floridi, L. (2016). The ethics of algorithms: Mapping the debate. <em>Big Data & Society, 3</em>(2), 1–21.</span>
+      </li>
+      <li>
+        <span class="ref-num">9</span>
+        <span>Jobin, A., Ienca, M., & Vayena, E. (2019). The global landscape of AI ethics guidelines. <em>Nature Machine Intelligence, 1</em>(9), 389–399.</span>
+      </li>
+      <li>
+        <span class="ref-num">10</span>
+        <span>Raji, I. D., & Buolamwini, J. (2019). Actionable auditing: Investigating the impact of publicly naming biased performance results of commercial AI products. <em>Proceedings of AAAI/ACM AIES</em>, 429–435.</span>
+      </li>
+      <li>
+        <span class="ref-num">11</span>
+        <span>Gebru, T., Morgenstern, J., Vecchione, B., Vaughan, J. W., Wallach, H., Daumé, H., III, & Crawford, K. (2018). Datasheets for datasets. <em>arXiv:1803.09010</em>.</span>
+      </li>
+      <li>
+        <span class="ref-num">12</span>
+        <span>Mitchell, M., Wu, S., Zaldivar, A., Barnes, P., Vasserman, L., Hutchinson, B., … Gebru, T. (2019). Model cards for model reporting. <em>Proceedings of FAccT</em>, 220–229.</span>
+      </li>
+    </ol>
+  </section>
+</div>
+
+<!-- Footer -->
+<footer>
+  <p>IronBridge Manufacturing · <strong>Responsible AI Framework</strong> · Prepared by Hoang · RAI Capstone 2025</p>
+  <p style="margin-top:0.5rem;">Approved by Dr. Iweriebor — "Excellent presentation with strong NIST alignment, practical manufacturing-specific bias controls, and a thoughtful personal reflection."</p>
+</footer>
+
+</body>
+</html>
